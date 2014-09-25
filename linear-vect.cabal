@@ -16,6 +16,10 @@ build-type:          Simple
 -- extra-source-files:  
 cabal-version:       >=1.10
 
+source-repository head
+  type:              git
+  location:          https://github.com/capsjac/linear-vect
+
 library
   exposed-modules:     Linear.Vect, Linear.Class, Linear.Mat
   -- other-modules:       
