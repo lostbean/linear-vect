@@ -143,7 +143,7 @@ _flip1stRow4 (M4 a b c d) = M4 (neg a) b c d
 
 --------------------------------------------------------------------------------
 -- projective matrices
-  
+
 instance Fractional a => Projective a V2 M2 Ortho2 M3 Proj3 where
   fromProjective (Proj3 m) = m
   toProjectiveUnsafe = Proj3
@@ -151,7 +151,7 @@ instance Fractional a => Projective a V2 M2 Ortho2 M3 Proj3 where
   linear     = Proj3 . extendWith (1 :: a)
   translation v = Proj3 $ M3 (V3 1 0 0) (V3 0 1 0) (extendWith (1 :: a) v)
   scaling     v = Proj3 $ diag (extendWith (1 :: a) v)
-  
+
 instance Fractional a => Projective a V3 M3 Ortho3 M4 Proj4 where
   fromProjective (Proj4 m) = m
   toProjectiveUnsafe = Proj4
@@ -194,16 +194,10 @@ _invertProj4 (Proj4 mat@(M4 _ _ _ t)) =
 --------------------------------------------------------------------------------                    
 -- M2 instances
 
-instance HasCoordinates (M2 a) (V2 a) where
-  _1 (M2 x _) = x
-  _2 (M2 _ y) = y
-  _3 _ = error "has only 2 coordinates"
-  _4 _ = error "has only 2 coordinates"
-
 instance Transpose (M2 a) (M2 a) where
-  transpose (M2 row1 row2) =
-    M2 (V2 (_1 row1) (_1 row2))
-         (V2 (_2 row1) (_2 row2))
+  transpose (M2 (V2 x1 y1) (V2 x2 y2)) =
+    M2 (V2 x1 x2)
+       (V2 y1 y2)
 
 instance Fractional a => SquareMatrix (M2 a) where
   idmtx = M2 (V2 1 0) (V2 0 1)
@@ -216,7 +210,7 @@ instance Num a => AbelianGroup (M2 a) where
   (&-) (M2 r1 r2) (M2 s1 s2) = M2 (r1 &- s1) (r2 &- s2)
   neg  (M2 r1 r2)              = M2 (neg r1) (neg r2)  
   zero = M2 zero zero  
-  
+
 instance Num a => Vector a M2 where
   scalarMul s (M2 r1 r2) = M2 (g r1) (g r2) where g = scalarMul s
   mapVec    f (M2 r1 r2) = M2 (g r1) (g r2) where g = mapVec f
@@ -232,7 +226,7 @@ instance Fractional a => Ring (M2 a)
 
 instance Num a => LeftModule (M2 a) (V2 a) where
   lmul (M2 row1 row2) v = V2 (row1 &. v) (row2 &. v) 
-  
+
 instance Fractional a => RightModule (V2 a) (M2 a) where
   rmul v mt = lmul (transpose mt) v
 
@@ -255,14 +249,14 @@ instance Show M2 where
 instance (Num a, Storable a) => Storable (M2 a) where
   sizeOf    _ = 2 * sizeOf (undefined :: V2 a)
   alignment _ = alignment  (undefined :: V2 a)
-  
+
   peek q = do
     let p = castPtr q :: Ptr (V2 a)
         k = sizeOf (undefined :: V2 a)
     r1 <- peek        p 
     r2 <- peekByteOff p k
     return (M2 r1 r2)
-    
+
   poke q (M2 r1 r2) = do
     let p = castPtr q :: Ptr (V2 a)
         k = sizeOf (undefined :: V2 a)
@@ -277,38 +271,29 @@ instance (Num a, Random a) => Random (M2 a) where
     let (x,gen1) = randomR (a,c) gen
         (y,gen2) = randomR (b,d) gen1
     in (M2 x y, gen2)
-          
+
 instance Num a => Dimension (M2 a) where dim _ = 2
-     
+
 instance (Floating a) => MatrixNorms a (M2 a) where 
   frobeniusNorm (M2 r1 r2) =  
     sqrt $
       normsqr r1 + 
       normsqr r2
-     
+
 instance Num a => Pointwise (M2 a) where
   pointwise (M2 x1 y1) (M2 x2 y2) = M2 (x1 &! x2) (y1 &! y2)
-       
+
 
 --------------------------------------------------------------------------------   
 -- M3 instances
 
-instance HasCoordinates (M3 a) (V3 a) where
-  _1 (M3 x _ _) = x
-  _2 (M3 _ y _) = y
-  _3 (M3 _ _ z) = z
-  _4 _ = error "has only 3 coordinates"  
-
 instance Transpose (M3 a) (M3 a) where
-  transpose (M3 row1 row2 row3) = 
-    M3 (V3 (_1 row1) (_1 row2) (_1 row3)) 
-         (V3 (_2 row1) (_2 row2) (_2 row3)) 
-         (V3 (_3 row1) (_3 row2) (_3 row3)) 
+  transpose (M3 (V3 x1 y1 z1) (V3 x2 y2 z2) (V3 x3 y3 z3)) =
+    M3 (V3 x1 x2 x3) (V3 y1 y2 y3) (V3 z1 z2 z3)
 
 instance Fractional a => SquareMatrix (M3 a) where
-         
   idmtx = M3 (V3 1 0 0) (V3 0 1 0) (V3 0 0 1)
-  
+
   inverse (M3 (V3 a b c) (V3 e f g) (V3 i j k)) = 
     M3 (V3 (d11*r) (d21*r) (d31*r))  
          (V3 (d12*r) (d22*r) (d32*r))  
@@ -350,7 +335,7 @@ instance Fractional a => Ring (M3 a)
 
 instance Num a => LeftModule (M3 a) (V3 a) where
   lmul (M3 row1 row2 row3) v = V3 (row1 &. v) (row2 &. v) (row3 &. v)
-  
+
 instance Fractional a => RightModule (V3 a) (M3 a) where
   rmul v mt = lmul (transpose mt) v
 
@@ -374,7 +359,7 @@ instance Show M3 where
 instance (Num a, Storable a) => Storable (M3 a) where
   sizeOf    _ = 3 * sizeOf (undefined::V3 a)
   alignment _ = alignment  (undefined::V3 a)
-  
+
   peek q = do
     let p = castPtr q :: Ptr (V3 a)
         k = sizeOf (undefined::V3 a)
@@ -382,7 +367,7 @@ instance (Num a, Storable a) => Storable (M3 a) where
     r2 <- peekByteOff p (k  )
     r3 <- peekByteOff p (k+k)
     return (M3 r1 r2 r3)
-    
+
   poke q (M3 r1 r2 r3) = do
     let p = castPtr q :: Ptr (V3 a)
         k = sizeOf (undefined::V3 a)
@@ -399,9 +384,9 @@ instance (Num a, Random a) => Random (M3 a) where
         (y,gen2) = randomR (b,e) gen1
         (z,gen3) = randomR (c,f) gen2  
     in (M3 x y z, gen3)
-   
+
 instance Num a => Dimension (M3 a) where dim _ = 3
-  
+
 instance Floating a => MatrixNorms a (M3 a) where 
   frobeniusNorm (M3 r1 r2 r3)  = 
     sqrt $
@@ -415,18 +400,12 @@ instance Num a => Pointwise (M3 a) where
 --------------------------------------------------------------------------------
 -- M4 instances
 
-instance HasCoordinates (M4 a) (V4 a) where
-  _1 (M4 x _ _ _) = x
-  _2 (M4 _ y _ _) = y
-  _3 (M4 _ _ z _) = z
-  _4 (M4 _ _ _ w) = w
-
 instance Transpose (M4 a) (M4 a) where
-  transpose (M4 row1 row2 row3 row4) = 
-    M4 (V4 (_1 row1) (_1 row2) (_1 row3) (_1 row4)) 
-         (V4 (_2 row1) (_2 row2) (_2 row3) (_2 row4)) 
-         (V4 (_3 row1) (_3 row2) (_3 row3) (_3 row4)) 
-         (V4 (_4 row1) (_4 row2) (_4 row3) (_4 row4)) 
+  transpose (M4 (V4 x1 y1 z1 w1) (V4 x2 y2 z2 w2) (V4 x3 y3 z3 w3) (V4 x4 y4 z4 w4)) =
+    M4 (V4 x1 x2 x3 x4)
+       (V4 y1 y2 y3 y4)
+       (V4 z1 z2 z3 z4)
+       (V4 w1 w2 w3 w4)
 
 instance Num a => SquareMatrix (M4 a) where
   idmtx = M4 (V4 1 0 0 0) (V4 0 1 0 0) (V4 0 0 1 0) (V4 0 0 0 1)
@@ -435,9 +414,9 @@ instance Num a => SquareMatrix (M4 a) where
 instance Num a => AbelianGroup (M4 a) where
   (&+) (M4 r1 r2 r3 r4) (M4 s1 s2 s3 s4) = M4 (r1 &+ s1) (r2 &+ s2) (r3 &+ s3) (r4 &+ s4)
   (&-) (M4 r1 r2 r3 r4) (M4 s1 s2 s3 s4) = M4 (r1 &- s1) (r2 &- s2) (r3 &- s3) (r4 &- s4)
-  neg  (M4 r1 r2 r3 r4)                    = M4 (neg r1) (neg r2) (neg r3) (neg r4) 
+  neg  (M4 r1 r2 r3 r4)                  = M4 (neg r1) (neg r2) (neg r3) (neg r4) 
   zero = M4 zero zero zero zero
-  
+
 instance Num a => Vector a M4 where
   scalarMul s (M4 r1 r2 r3 r4) = M4 (g r1) (g r2) (g r3) (g r4) where g = scalarMul s
   mapVec    f (M4 r1 r2 r3 r4) = M4 (g r1) (g r2) (g r3) (g r4) where g = mapVec f
@@ -446,16 +425,16 @@ instance Num a => MultSemiGroup (M4 a) where
   (.*.) (M4 r1 r2 r3 r4) n = 
     let (M4 c1 c2 c3 c4) = transpose n
     in M4 (V4 (r1 &. c1) (r1 &. c2) (r1 &. c3) (r1 &. c4))
-            (V4 (r2 &. c1) (r2 &. c2) (r2 &. c3) (r2 &. c4))
-            (V4 (r3 &. c1) (r3 &. c2) (r3 &. c3) (r3 &. c4))
-            (V4 (r4 &. c1) (r4 &. c2) (r4 &. c3) (r4 &. c4))
+          (V4 (r2 &. c1) (r2 &. c2) (r2 &. c3) (r2 &. c4))
+          (V4 (r3 &. c1) (r3 &. c2) (r3 &. c3) (r3 &. c4))
+          (V4 (r4 &. c1) (r4 &. c2) (r4 &. c3) (r4 &. c4))
   one = idmtx 
 
 instance Num a => Ring (M4 a)
 
 instance Num a => LeftModule (M4 a) (V4 a) where
   lmul (M4 row1 row2 row3 row4) v = V4 (row1 &. v) (row2 &. v) (row3 &. v) (row4 &. v)
-  
+
 instance Num a => RightModule (V4 a) (M4 a) where
   rmul v mt = lmul (transpose mt) v
 
@@ -481,7 +460,7 @@ instance Show M4 where
 instance (Num a, Storable a) => Storable (M4 a) where
   sizeOf    _ = 4 * sizeOf (undefined::V4 a)
   alignment _ = alignment  (undefined::V4 a)
-  
+
   peek q = do
     let p = castPtr q :: Ptr (V4 a)
         k = sizeOf (undefined :: V4 a)
@@ -490,7 +469,7 @@ instance (Num a, Storable a) => Storable (M4 a) where
     r3 <- peekByteOff p (k+k)
     r4 <- peekByteOff p (3*k)
     return (M4 r1 r2 r3 r4)
-    
+
   poke q (M4 r1 r2 r3 r4) = do
     let p = castPtr q :: Ptr (V4 a)
         k = sizeOf (undefined :: V4 a)
@@ -509,9 +488,9 @@ instance (Num a, Random a) => Random (M4 a) where
         (z,gen3) = randomR (c,g) gen2  
         (w,gen4) = randomR (d,h) gen3  
     in (M4 x y z w, gen4)
-    
+
 instance Num a => Dimension (M4 a) where dim _ = 4
-   
+
 instance Floating a => MatrixNorms a (M4 a) where 
   frobeniusNorm (M4 r1 r2 r3 r4) = 
     sqrt $
@@ -519,10 +498,10 @@ instance Floating a => MatrixNorms a (M4 a) where
       normsqr r2 + 
       normsqr r3 + 
       normsqr r4  
-    
+
 instance Num a => Pointwise (M4 a) where
   pointwise (M4 x1 y1 z1 w1) (M4 x2 y2 z2 w2) = M4 (x1 &! x2) (y1 &! y2) (z1 &! z2) (w1 &! w2)
-    
+
 --------------------------------------------------------------------------------
 -- Extend instances
 
@@ -583,7 +562,7 @@ instance Storable a => Storable (M2x3 a) where
     r5 <- peekByteOff p (4*k)
     r6 <- peekByteOff p (5*k)
     return (M2x3 r1 r2 r3 r4 r5 r6)
-    
+
   poke q (M2x3 r1 r2 r3 r4 r5 r6) = do
     let p = castPtr q :: Ptr a
         k = sizeOf (undefined :: a)
@@ -610,7 +589,7 @@ instance Storable a => Storable (M2x4 a) where
     r7 <- peekByteOff p (6*k)
     r8 <- peekByteOff p (7*k)
     return (M2x4 r1 r2 r3 r4 r5 r6 r7 r8)
-    
+
   poke q (M2x4 r1 r2 r3 r4 r5 r6 r7 r8) = do
     let p = castPtr q :: Ptr a
         k = sizeOf (undefined :: a)
@@ -637,7 +616,7 @@ instance Storable a => Storable (M3x2 a) where
     r5 <- peekByteOff p (4*k)
     r6 <- peekByteOff p (5*k)
     return (M3x2 r1 r2 r3 r4 r5 r6)
-    
+
   poke q (M3x2 r1 r2 r3 r4 r5 r6) = do
     let p = castPtr q :: Ptr a
         k = sizeOf (undefined :: a)
@@ -668,7 +647,7 @@ instance Storable a => Storable (M3x4 a) where
     rb <- peekByteOff p (10*k)
     rc <- peekByteOff p (11*k)
     return (M3x4 r1 r2 r3 r4 r5 r6 r7 r8 r9 ra rb rc)
-    
+
   poke q (M3x4 r1 r2 r3 r4 r5 r6 r7 r8 r9 ra rb rc) = do
     let p = castPtr q :: Ptr a
         k = sizeOf (undefined :: a)
@@ -701,7 +680,7 @@ instance Storable a => Storable (M4x2 a) where
     r7 <- peekByteOff p (6*k)
     r8 <- peekByteOff p (7*k)
     return (M4x2 r1 r2 r3 r4 r5 r6 r7 r8)
-    
+
   poke q (M4x2 r1 r2 r3 r4 r5 r6 r7 r8) = do
     let p = castPtr q :: Ptr a
         k = sizeOf (undefined :: a)
@@ -734,7 +713,7 @@ instance Storable a => Storable (M4x3 a) where
     rb <- peekByteOff p (10*k)
     rc <- peekByteOff p (11*k)
     return (M4x3 r1 r2 r3 r4 r5 r6 r7 r8 r9 ra rb rc)
-    
+
   poke q (M4x3 r1 r2 r3 r4 r5 r6 r7 r8 r9 ra rb rc) = do
     let p = castPtr q :: Ptr a
         k = sizeOf (undefined :: a)

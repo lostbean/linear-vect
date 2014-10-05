@@ -6,9 +6,11 @@
 {-# LANGUAGE StandaloneDeriving #-}
 
 module Linear.Vect
-  ( V2(..) , V3(..) , V4(..)
-  , Normal2 , Normal3 , Normal4
-  , mkV2 , mkV3 , mkV4
+  ( V2(..), V3(..), V4(..)
+  , Normal2, Normal3, Normal4
+  , mkV2, mkV3, mkV4
+  , HasV2, HasV3, HasV4
+  , _x, _y, _z, _w
   )
 where
 
@@ -20,7 +22,7 @@ import Linear.Class
 
 --------------------------------------------------------------------------------
 -- Vec datatypes
-  
+
 data V2 a = V2 !a !a 
   deriving (Read,Show)
 data V3 a = V3 !a !a !a
@@ -49,9 +51,29 @@ mkV2 (x,y)     = V2 x y
 mkV3 (x,y,z)   = V3 x y z
 mkV4 (x,y,z,w) = V4 x y z w
 
+class HasV2 v where
+  getV2 :: v a -> V2 a
+
+_x :: V2 a -> a
+_x (V2 x _) = x
+_y :: V2 a -> a
+_y (V2 _ y) = y
+
+class HasV3 v where
+  getV3 :: v a -> V3 a
+
+_z :: V3 a -> a
+_z (V3 _ _ z) = z
+
+class HasV4 v where
+  getV4 :: v a -> V4 a
+
+_w :: V4 a -> a
+_w (V4 _ _ _ w) = w
+
 --------------------------------------------------------------------------------
 -- Unit vectors
-  
+
 instance Floating a => UnitVector a V2 Normal2 where
   mkNormal v = Normal2 (normalize v)
   fromNormal (Normal2 v) = v 
@@ -75,7 +97,7 @@ _rndUnit g =
   where
     (v,h) = random g
     d = normsqr v
-    
+
 instance (Floating a, Random a, Ord a) => Random (Normal2 a) where
   random g = let (v,h) = _rndUnit g in (Normal2 v, h)  
   randomR _ = random
@@ -93,23 +115,19 @@ instance Floating a => CrossProd (Normal3 a) where
 
 --------------------------------------------------------------------------------
 -- V2 instances
-
-instance HasCoordinates (V2 a) a where
-  _1 (V2 x _) = x
-  _2 (V2 _ y) = y
-  _3 _ = error "has only 2 coordinates"
-  _4 _ = error "has only 2 coordinates"
+instance HasV2 V2 where
+  getV2 = id
 
 instance Num a => AbelianGroup (V2 a) where
-  (&+) (V2 x1 y1) (V2 x2 y2) = V2 (x1+x2) (y1+y2) 
+  (&+) (V2 x1 y1) (V2 x2 y2) = V2 (x1+x2) (y1+y2)
   (&-) (V2 x1 y1) (V2 x2 y2) = V2 (x1-x2) (y1-y2)
   neg  (V2 x y)                = V2 (-x) (-y)
   zero = V2 0 0
-  
+
 instance Num a => Vector a V2 where
   scalarMul s (V2 x y) = V2 (s*x) (s*y)
   mapVec    f (V2 x y) = V2 (f x) (f y)
-  
+
 instance Num a => DotProd a V2 where
   (&.) (V2 x1 y1) (V2 x2 y2) = x1*x2 + y1*y2
 
@@ -121,7 +139,7 @@ instance Num a => Pointwise (V2 a) where
 instance Num a => Determinant a (V2 a, V2 a) where
   det (V2 x1 y1 , V2 x2 y2) = x1*y2 - x2*y1
 
-{-     
+{-
 instance Show V2 where
   show (V2 x y) = "( " ++ show x ++ " , " ++ show y ++ " )"
 -}
@@ -132,19 +150,19 @@ instance (Num a, Random a) => Random (V2 a) where
     let (x,gen1) = randomR (a,c) gen
         (y,gen2) = randomR (b,d) gen1
     in (V2 x y, gen2)
-     
+
 instance (Num a, Storable a) => Storable (V2 a) where
   -- 4byte aligned
   sizeOf    _ = (sizeOf (undefined :: a) * 2 + 3) .&. 252
   alignment _ = sizeOf (undefined :: a)
-  
+
   peek q = do
     let p = castPtr q :: Ptr a
         k = sizeOf (undefined :: a)
     x <- peek        p 
     y <- peekByteOff p k
     return (V2 x y)
-    
+
   poke q (V2 x y) = do
     let p = castPtr q :: Ptr a
         k = sizeOf (undefined :: a)
@@ -155,19 +173,18 @@ instance Num a => Dimension (V2 a) where dim _ = 2
 
 --------------------------------------------------------------------------------     
 -- V3 instances
+instance HasV2 V3 where
+  getV2 (V3 x y _) = V2 x y
 
-instance HasCoordinates (V3 a) a where
-  _1 (V3 x _ _) = x
-  _2 (V3 _ y _) = y
-  _3 (V3 _ _ z) = z
-  _4 _ = error "has only 3 coordinates"
+instance HasV3 V3 where
+  getV3 = id
 
 instance Num a => AbelianGroup (V3 a) where
   (&+) (V3 x1 y1 z1) (V3 x2 y2 z2) = V3 (x1+x2) (y1+y2) (z1+z2) 
   (&-) (V3 x1 y1 z1) (V3 x2 y2 z2) = V3 (x1-x2) (y1-y2) (z1-z2) 
   neg  (V3 x y z)                    = V3 (-x) (-y) (-z)
   zero = V3 0 0 0
-  
+
 instance Num a => Vector a V3 where
   scalarMul s (V3 x y z) = V3 (s*x) (s*y) (s*z)
   mapVec    f (V3 x y z) = V3 (f x) (f y) (f z)
@@ -192,17 +209,17 @@ instance (Num a, Random a) => Random (V3 a) where
         (y,gen2) = randomR (b,e) gen1
         (z,gen3) = randomR (c,f) gen2  
     in (V3 x y z, gen3)
-      
+
 instance Num a => CrossProd (V3 a) where
   crossprod (V3 x1 y1 z1) (V3 x2 y2 z2) = V3 (y1*z2-y2*z1) (z1*x2-z2*x1) (x1*y2-x2*y1) 
 
 instance Num a => Determinant a (V3 a, V3 a, V3 a) where
   det (u,v,w) = u &. (v &^ w)  
- 
+
 instance (Num a, Storable a) => Storable (V3 a) where
   sizeOf    _ = (sizeOf (undefined :: a) * 3 + 3) .&. 252
   alignment _ = sizeOf (undefined :: a)
-  
+
   peek q = do
     let p = castPtr q :: Ptr a
         k = sizeOf (undefined :: a)
@@ -210,7 +227,7 @@ instance (Num a, Storable a) => Storable (V3 a) where
     y <- peekByteOff p (k  )
     z <- peekByteOff p (k+k)
     return (V3 x y z)
-    
+
   poke q (V3 x y z) = do
     let p = castPtr q :: Ptr a
         k = sizeOf (undefined :: a)
@@ -219,22 +236,24 @@ instance (Num a, Storable a) => Storable (V3 a) where
     pokeByteOff p (k+k) z
 
 instance Num a => Dimension (V3 a) where dim _ = 3
-    
+
 --------------------------------------------------------------------------------
 -- V4 instances
+instance HasV2 V4 where
+  getV2 (V4 x y _ _) = V2 x y
 
-instance HasCoordinates (V4 a) a where
-  _1 (V4 x _ _ _) = x
-  _2 (V4 _ y _ _) = y
-  _3 (V4 _ _ z _) = z
-  _4 (V4 _ _ _ w) = w
+instance HasV3 V4 where
+  getV3 (V4 x y z w) = V3 x y z
+
+instance HasV4 V4 where
+  getV4 = id
 
 instance Num a => AbelianGroup (V4 a) where
   (&+) (V4 x1 y1 z1 w1) (V4 x2 y2 z2 w2) = V4 (x1+x2) (y1+y2) (z1+z2) (w1+w2)
   (&-) (V4 x1 y1 z1 w1) (V4 x2 y2 z2 w2) = V4 (x1-x2) (y1-y2) (z1-z2) (w1-w2)
-  neg  (V4 x y z w)                        = V4 (-x) (-y) (-z) (-w)
+  neg  (V4 x y z w)                      = V4 (-x) (-y) (-z) (-w)
   zero = V4 0 0 0 0
-  
+
 instance Num a => Vector a V4 where
   scalarMul s (V4 x y z w) = V4 (s*x) (s*y) (s*z) (s*w)
   mapVec    f (V4 x y z w) = V4 (f x) (f y) (f z) (f w)
@@ -260,11 +279,11 @@ instance (Num a, Random a) => Random (V4 a) where
         (z,gen3) = randomR (c,g) gen2  
         (w,gen4) = randomR (d,h) gen3  
     in (V4 x y z w, gen4)
-           
+
 instance (Num a, Storable a) => Storable (V4 a) where
   sizeOf    _ = 4 * sizeOf (undefined :: a)
   alignment _ = sizeOf (undefined :: a)
-  
+
   peek q = do
     let p = castPtr q :: Ptr a
         k = sizeOf (undefined :: a)
@@ -273,7 +292,7 @@ instance (Num a, Storable a) => Storable (V4 a) where
     z <- peekByteOff p (k+k)
     w <- peekByteOff p (3*k)
     return (V4 x y z w)
-    
+
   poke q (V4 x y z w) = do
     let p = castPtr q :: Ptr a
         k = sizeOf (undefined :: a)
@@ -283,7 +302,7 @@ instance (Num a, Storable a) => Storable (V4 a) where
     pokeByteOff p (3*k) w
 
 instance Num a => Dimension (V4 a) where dim _ = 4
-    
+
 --------------------------------------------------------------------------------
 -- Extend instances
 

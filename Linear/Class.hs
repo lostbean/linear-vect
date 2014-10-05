@@ -9,7 +9,7 @@ module Linear.Class
   , normalize , distance , angle , angle'
   , UnitVector(..)
   , Pointwise(..)
-  , Extend(..) , HasCoordinates(..) , Dimension(..) , Transpose(..)
+  , Extend(..) , Dimension(..) , Transpose(..)
   , SquareMatrix(..) , Tensor(..) , Diagonal (..) , Determinant(..)
   , Orthogonal(..) , Projective(..) , MatrixNorms(..)
   , project , project' , projectUnsafe , flipNormal
@@ -155,12 +155,6 @@ class Pointwise v where
 
 infix 7 &^
 infix 7 &!
-
-class HasCoordinates v x | v -> x where
-  _1 :: v -> x
-  _2 :: v -> x
-  _3 :: v -> x
-  _4 :: v -> x
 
 -- | conversion between vectors (and matrices) of different dimensions
 class Extend a u v where
