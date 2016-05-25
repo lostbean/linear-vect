@@ -166,8 +166,9 @@ class Extend a u v where
   trimHead       :: v a -> u a      -- ^ example: @trimHead (Vec4 5 6 7 8) = Vec2 7 8@
 
 -- | makes a diagonal matrix from a vector
-class Diagonal s t | t->s where
-  diag :: s -> t
+class Diagonal s t | t -> s where
+  diag    :: s -> t
+  diagVec :: t -> s
 
 class Transpose m n | m -> n, n -> m where
   transpose :: m -> n

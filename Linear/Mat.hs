@@ -232,6 +232,7 @@ instance Fractional a => RightModule (Vec2 a) (Mat2 a) where
 
 instance Num a => Diagonal (Vec2 a) (Mat2 a) where
   diag    (Vec2 x y) = Mat2 (Vec2 x 0) (Vec2 0 y)
+  diagVec (Mat2 (Vec2 x _) (Vec2 _ y)) = (Vec2 x y)
 
 instance Num a => Tensor (Mat2 a) (Vec2 a) where
   outer (Vec2 a b) (Vec2 x y) = Mat2
@@ -340,6 +341,7 @@ instance Fractional a => RightModule (Vec3 a) (Mat3 a) where
 
 instance Num a => Diagonal (Vec3 a) (Mat3 a) where
   diag    (Vec3 x y z) = Mat3 (Vec3 x 0 0) (Vec3 0 y 0) (Vec3 0 0 z)
+  diagVec (Mat3 (Vec3 x _ _) (Vec3 _ y _) (Vec3 _ _ z)) = (Vec3 x y z)
 
 instance Num a => Tensor (Mat3 a) (Vec3 a) where
   outer (Vec3 a b c) (Vec3 x y z) = Mat3
@@ -439,6 +441,7 @@ instance Num a => RightModule (Vec4 a) (Mat4 a) where
 
 instance Num a => Diagonal (Vec4 a) (Mat4 a) where
   diag    (Vec4 x y z w) = Mat4 (Vec4 x 0 0 0) (Vec4 0 y 0 0) (Vec4 0 0 z 0) (Vec4 0 0 0 w)
+  diagVec (Mat4 (Vec4 x _ _ _) (Vec4 _ y _ _) (Vec4 _ _ z _) (Vec4 _ _ _ w)) = Vec4 x y z w
 
 instance Num a => Tensor (Mat4 a) (Vec4 a) where
   outer (Vec4 a b c d) (Vec4 x y z w) = Mat4
