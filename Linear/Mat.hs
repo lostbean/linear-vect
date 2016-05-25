@@ -284,6 +284,21 @@ instance (Floating a) => MatrixNorms a (Mat2 a) where
 instance Num a => Pointwise (Mat2 a) where
   pointwise (Mat2 x1 y1) (Mat2 x2 y2) = Mat2 (x1 &! x2) (y1 &! y2)
 
+instance Functor Mat2 where
+  fmap f (Mat2 a b) = Mat2 (fmap f a) (fmap f b)
+
+instance Foldable Mat2 where
+    foldr f acc (Mat2 a b) = foldr f (foldr f acc b) a
+    foldl f acc (Mat2 a b) = foldl f (foldl f acc a) b
+    foldr1 f    (Mat2 a b) = foldr1 f a `f` foldr1 f b
+    foldl1 f    (Mat2 a b) = foldl1 f b `f` foldl1 f a
+    null                   = const False
+    length                 = const 2
+    minimum = foldl1 min
+    maximum = foldl1 max
+    sum     (Mat2 a b) = sum     a * sum     b
+    product (Mat2 a b) = product a * product b
+
 --------------------------------------------------------------------------------
 -- Mat3 instances
 
@@ -398,6 +413,21 @@ instance Floating a => MatrixNorms a (Mat3 a) where
 instance Num a => Pointwise (Mat3 a) where
   pointwise (Mat3 x1 y1 z1) (Mat3 x2 y2 z2) = Mat3 (x1 &! x2) (y1 &! y2) (z1 &! z2)
 
+instance Functor Mat3 where
+  fmap f (Mat3 a b c) = Mat3 (fmap f a) (fmap f b) (fmap f c)
+
+instance Foldable Mat3 where
+    foldr f acc (Mat3 a b c) = foldr f (foldr f (foldr f acc c) b) a
+    foldl f acc (Mat3 a b c) = foldl f (foldl f (foldl f acc a) b) c
+    foldr1 f    (Mat3 a b c) = foldr1 f a `f` foldr1 f b `f` foldr1 f c
+    foldl1 f    (Mat3 a b c) = foldl1 f c `f` foldl1 f b `f` foldl1 f a
+    null                     = const False
+    length                   = const 3
+    minimum = foldl1 min
+    maximum = foldl1 max
+    sum     (Mat3 a b c) = sum     a * sum     b * sum     c
+    product (Mat3 a b c) = product a * product b * product c
+
 --------------------------------------------------------------------------------
 -- Mat4 instances
 
@@ -503,6 +533,21 @@ instance Floating a => MatrixNorms a (Mat4 a) where
 
 instance Num a => Pointwise (Mat4 a) where
   pointwise (Mat4 x1 y1 z1 w1) (Mat4 x2 y2 z2 w2) = Mat4 (x1 &! x2) (y1 &! y2) (z1 &! z2) (w1 &! w2)
+
+instance Functor Mat4 where
+  fmap f (Mat4 a b c d) = Mat4 (fmap f a) (fmap f b) (fmap f c) (fmap f d)
+
+instance Foldable Mat4 where
+    foldr f acc (Mat4 a b c d) = foldr f (foldr f (foldr f (foldr f acc d) c) b) a
+    foldl f acc (Mat4 a b c d) = foldl f (foldl f (foldl f (foldl f acc a) b) c) d
+    foldr1 f    (Mat4 a b c d) = foldr1 f a `f` foldr1 f b `f` foldr1 f c `f` foldr1 f d
+    foldl1 f    (Mat4 a b c d) = foldl1 f d `f` foldl1 f c `f` foldl1 f b `f` foldl1 f a
+    null                       = const False
+    length                     = const 4
+    minimum = foldl1 min
+    maximum = foldl1 max
+    sum     (Mat4 a b c d) = sum     a * sum     b * sum     c * sum     d
+    product (Mat4 a b c d) = product a * product b * product c * product d
 
 --------------------------------------------------------------------------------
 -- Extend instances

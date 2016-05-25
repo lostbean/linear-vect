@@ -171,6 +171,21 @@ instance (Num a, Storable a) => Storable (Vec2 a) where
 
 instance Num a => Dimension (Vec2 a) where dim _ = 2
 
+instance Functor Vec2 where
+  fmap f (Vec2 a b) = Vec2 (f a) (f b)
+
+instance Foldable Vec2 where
+    foldr f acc (Vec2 a b) = f a (f b acc)
+    foldl f acc (Vec2 a b) = acc `f` b `f` a
+    foldr1 f    (Vec2 a b) = a `f` b
+    foldl1 f    (Vec2 a b) = b `f` a
+    null                   = const False
+    length                 = const 2
+    maximum     (Vec2 a b) = a `max` b
+    minimum     (Vec2 a b) = a `min` b
+    sum         (Vec2 a b) = a + b
+    product     (Vec2 a b) = a * b
+
 --------------------------------------------------------------------------------
 -- Vec3 instances
 instance HasV2 Vec3 where
@@ -237,6 +252,21 @@ instance (Num a, Storable a) => Storable (Vec3 a) where
 
 instance Num a => Dimension (Vec3 a) where dim _ = 3
 
+instance Functor Vec3 where
+  fmap f (Vec3 a b c) = Vec3 (f a) (f b) (f c)
+
+instance Foldable Vec3 where
+    foldr f acc (Vec3 a b c) = f a (f b (f c acc))
+    foldl f acc (Vec3 a b c) = acc `f` c `f` b `f` a
+    foldr1 f    (Vec3 a b c) = a `f` b `f` c
+    foldl1 f    (Vec3 a b c) = c `f` b `f` a
+    null                     = const False
+    length                   = const 3
+    maximum     (Vec3 a b c) = a `max` b `max` c
+    minimum     (Vec3 a b c) = a `min` b `min` c
+    sum         (Vec3 a b c) = a + b + c
+    product     (Vec3 a b c) = a * b * c
+
 --------------------------------------------------------------------------------
 -- Vec4 instances
 instance HasV2 Vec4 where
@@ -302,6 +332,21 @@ instance (Num a, Storable a) => Storable (Vec4 a) where
     pokeByteOff p (3*k) w
 
 instance Num a => Dimension (Vec4 a) where dim _ = 4
+
+instance Functor Vec4 where
+  fmap f (Vec4 a b c d) = Vec4 (f a) (f b) (f c) (f d)
+
+instance Foldable Vec4 where
+    foldr f acc (Vec4 a b c d) = f a (f b (f c (f d acc)))
+    foldl f acc (Vec4 a b c d) = acc `f` d `f` c `f` b `f` a
+    foldr1 f    (Vec4 a b c d) = a `f` b `f` c `f` d
+    foldl1 f    (Vec4 a b c d) = d `f` c `f` b `f` a
+    null                       = const False
+    length                     = const 4
+    maximum     (Vec4 a b c d) = a `max` b `max` c `max` d
+    minimum     (Vec4 a b c d) = a `min` b `min` c `min` d
+    sum         (Vec4 a b c d) = a + b + c + d
+    product     (Vec4 a b c d) = a * b * c * d
 
 --------------------------------------------------------------------------------
 -- Extend instances
