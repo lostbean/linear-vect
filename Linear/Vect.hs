@@ -71,6 +71,15 @@ class HasV4 v where
 _w :: Vec4 a -> a
 _w (Vec4 _ _ _ w) = w
 
+instance HasOne Normal2 where
+  _1 (Normal2 (Vec2 x _)) = x
+
+instance HasOne Normal3 where
+  _1 (Normal3 (Vec3 x _ _)) = x
+
+instance HasOne Normal4 where
+  _1 (Normal4 (Vec4 x _ _ _)) = x
+
 --------------------------------------------------------------------------------
 -- Unit vectors
 
@@ -186,6 +195,12 @@ instance Foldable Vec2 where
     sum         (Vec2 a b) = a + b
     product     (Vec2 a b) = a * b
 
+instance HasOne Vec2 where
+  _1 (Vec2 x _) = x
+
+instance HasTwo Vec2 where
+  _2 (Vec2 _ y) = y
+
 --------------------------------------------------------------------------------
 -- Vec3 instances
 instance HasV2 Vec3 where
@@ -267,6 +282,15 @@ instance Foldable Vec3 where
     sum         (Vec3 a b c) = a + b + c
     product     (Vec3 a b c) = a * b * c
 
+instance HasOne Vec3 where
+  _1 (Vec3 x _ _) = x
+
+instance HasTwo Vec3 where
+  _2 (Vec3 _ y _) = y
+
+instance HasThree Vec3 where
+  _3 (Vec3 _ _ z) = z
+
 --------------------------------------------------------------------------------
 -- Vec4 instances
 instance HasV2 Vec4 where
@@ -347,6 +371,18 @@ instance Foldable Vec4 where
     minimum     (Vec4 a b c d) = a `min` b `min` c `min` d
     sum         (Vec4 a b c d) = a + b + c + d
     product     (Vec4 a b c d) = a * b * c * d
+
+instance HasOne Vec4 where
+  _1 (Vec4 x _ _ _) = x
+
+instance HasTwo Vec4 where
+  _2 (Vec4 _ y _ _) = y
+
+instance HasThree Vec4 where
+  _3 (Vec4 _ _ z _) = z
+
+instance HasFour Vec4 where
+  _4 (Vec4 _ _ _ w) = w
 
 --------------------------------------------------------------------------------
 -- Extend instances

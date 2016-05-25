@@ -14,6 +14,10 @@ module Linear.Class
   , Orthogonal(..) , Projective(..) , MatrixNorms(..)
   , project , project' , projectUnsafe , flipNormal
   , householder, householderOrtho
+  , HasOne   (..)
+  , HasTwo   (..)
+  , HasThree (..)
+  , HasFour  (..)
   )
 where
 
@@ -223,3 +227,16 @@ class (Vector a v, Orthogonal a n o, Diagonal (v a) (n a)) => Projective a v n o
   linear             :: n a -> p a
   translation        :: v a -> p a
   scaling            :: v a -> p a
+
+
+class HasOne v where
+  _1 :: v a -> a
+
+class HasTwo v where
+  _2 :: v a -> a
+
+class HasThree v where
+  _3 :: v a -> a
+
+class HasFour v where
+  _4 :: v a -> a
