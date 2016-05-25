@@ -307,16 +307,25 @@ instance Num a => Dimension (Vec4 a) where dim _ = 4
 -- Extend instances
 
 instance Num a => Extend a Vec2 Vec3 where
+  extendHeadZero   (Vec2 x y) = Vec3 0 x y
+  extendHeadWith t (Vec2 x y) = Vec3 t x y
+  trimHead       (Vec3 _ x y) = Vec2 x y
   extendZero       (Vec2 x y) = Vec3 x y 0
   extendWith     t (Vec2 x y) = Vec3 x y t
   trim           (Vec3 x y _) = Vec2 x y
 
 instance Num a => Extend a Vec2 Vec4 where
+  extendHeadZero   (Vec2 x y) = Vec4 0 0 x y
+  extendHeadWith t (Vec2 x y) = Vec4 t t x y
+  trimHead     (Vec4 _ _ x y) = Vec2 x y
   extendZero       (Vec2 x y) = Vec4 x y 0 0
   extendWith     t (Vec2 x y) = Vec4 x y t t
   trim         (Vec4 x y _ _) = Vec2 x y
 
 instance Num a => Extend a Vec3 Vec4 where
+  extendHeadZero   (Vec3 x y z) = Vec4 0 x y z
+  extendHeadWith t (Vec3 x y z) = Vec4 t x y z
+  trimHead       (Vec4 _ x y z) = Vec3 x y z
   extendZero       (Vec3 x y z) = Vec4 x y z 0
   extendWith     t (Vec3 x y z) = Vec4 x y z t
   trim           (Vec4 x y z _) = Vec3 x y z

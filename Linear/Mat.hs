@@ -505,16 +505,25 @@ instance Num a => Pointwise (Mat4 a) where
 -- Extend instances
 
 instance Num a => Extend a Mat2 Mat3 where
+  extendHeadZero   (Mat2 p q) = Mat3 zero (extendHeadZero p) (extendHeadZero q)
+  extendHeadWith w (Mat2 p q) = Mat3 (Vec3 w 0 0) (extendHeadZero p) (extendHeadZero q)
+  trimHead       (Mat3 _ p q) = Mat2 (trimHead p) (trimHead q)
   extendZero       (Mat2 p q) = Mat3 (extendZero p) (extendZero q) zero
   extendWith     w (Mat2 p q) = Mat3 (extendZero p) (extendZero q) (Vec3 0 0 w)
   trim           (Mat3 p q _) = Mat2 (trim p) (trim q)
 
 instance Num a => Extend a Mat2 Mat4 where
+  extendHeadZero   (Mat2 p q) = Mat4 zero zero (extendHeadZero p) (extendHeadZero q)
+  extendHeadWith w (Mat2 p q) = Mat4 (Vec4 w 0 0 0) (Vec4 0 w 0 0) (extendHeadZero p) (extendHeadZero q)
+  trimHead     (Mat4 _ _ p q) = Mat2 (trimHead p) (trimHead q)
   extendZero       (Mat2 p q) = Mat4 (extendZero p) (extendZero q) zero zero
   extendWith     w (Mat2 p q) = Mat4 (extendZero p) (extendZero q) (Vec4 0 0 w 0) (Vec4 0 0 0 w)
   trim         (Mat4 p q _ _) = Mat2 (trim p) (trim q)
 
 instance Num a => Extend a Mat3 Mat4 where
+  extendHeadZero   (Mat3 p q r) = Mat4 zero (extendHeadZero p) (extendHeadZero q) (extendHeadZero r)
+  extendHeadWith w (Mat3 p q r) = Mat4 (Vec4 w 0 0 0) (extendHeadZero p) (extendHeadZero q) (extendHeadZero r)
+  trimHead       (Mat4 _ p q r) = Mat3 (trimHead p) (trimHead q) (trimHead r)
   extendZero       (Mat3 p q r) = Mat4 (extendZero p) (extendZero q) (extendZero r) zero
   extendWith     w (Mat3 p q r) = Mat4 (extendZero p) (extendZero q) (extendZero r) (Vec4 0 0 0 w)
   trim           (Mat4 p q r _) = Mat3 (trim p) (trim q) (trim r)

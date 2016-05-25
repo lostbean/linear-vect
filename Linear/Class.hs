@@ -158,9 +158,12 @@ infix 7 &!
 
 -- | conversion between vectors (and matrices) of different dimensions
 class Extend a u v where
-  extendZero :: u a -> v a          -- ^ example: @extendZero (V2 5 6) = V4 5 6 0 0@
-  extendWith :: a -> u a -> v a   -- ^ example: @extendWith 1 (V2 5 6) = V4 5 6 1 1@
-  trim :: v a -> u a                -- ^ example: @trim (V4 5 6 7 8) = V2 5 6@
+  extendZero     :: u a -> v a      -- ^ example: @extendZero (V2 5 6) = V4 5 6 0 0@
+  extendWith     :: a -> u a -> v a -- ^ example: @extendWith 1 (V2 5 6) = V4 5 6 1 1@
+  trim           :: v a -> u a      -- ^ example: @trim (V4 5 6 7 8) = V2 5 6@
+  extendHeadZero :: u a -> v a      -- ^ example: @extendHeadZero (Vec2 5 6) = Vec4 0 0 5 6@
+  extendHeadWith :: a -> u a -> v a -- ^ example: @extendHeadWith 1 (Vec2 5 6) = Vec4 1 1 5 6@
+  trimHead       :: v a -> u a      -- ^ example: @trimHead (Vec4 5 6 7 8) = Vec2 7 8@
 
 -- | makes a diagonal matrix from a vector
 class Diagonal s t | t->s where
