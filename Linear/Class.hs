@@ -41,7 +41,7 @@ infixl 7 .*.
 semigroupProduct :: MultSemiGroup r => [r] -> r
 semigroupProduct l = foldl (.*.) one l
 
-class LeftModule r m where
+class LeftModule r m | r -> m, m -> r where
   lmul :: r -> m -> m
   (*.) :: r -> m -> m
   (*.) = lmul
