@@ -23,7 +23,7 @@ import Linear.Class
 --------------------------------------------------------------------------------
 -- Vec datatypes
 
-data V2 a = V2 !a !a 
+data V2 a = V2 !a !a
   deriving (Read,Show)
 data V3 a = V3 !a !a !a
   deriving (Read,Show)
@@ -32,7 +32,7 @@ data V4 a = V4 !a !a !a !a
 
 -- | The assumption when dealing with these is always that they are of unit length.
 -- Also, interpolation works differently.
-newtype Normal2 a = Normal2 (V2 a) deriving (Read,Show,Storable,Dimension) 
+newtype Normal2 a = Normal2 (V2 a) deriving (Read,Show,Storable,Dimension)
 newtype Normal3 a = Normal3 (V3 a) deriving (Read,Show,Storable,Dimension)
 newtype Normal4 a = Normal4 (V4 a) deriving (Read,Show,Storable,Dimension)
 
@@ -76,21 +76,21 @@ _w (V4 _ _ _ w) = w
 
 instance Floating a => UnitVector a V2 Normal2 where
   mkNormal v = Normal2 (normalize v)
-  fromNormal (Normal2 v) = v 
+  fromNormal (Normal2 v) = v
   toNormalUnsafe = Normal2
 
 instance Floating a => UnitVector a V3 Normal3 where
   mkNormal v = Normal3 (normalize v)
-  fromNormal (Normal3 v) = v 
+  fromNormal (Normal3 v) = v
   toNormalUnsafe = Normal3
 
 instance Floating a => UnitVector a V4 Normal4 where
   mkNormal v = Normal4 (normalize v)
-  fromNormal (Normal4 v) = v 
+  fromNormal (Normal4 v) = v
   toNormalUnsafe = Normal4
 
 _rndUnit :: (Fractional a, Ord a, RandomGen g, Random (v a), Vector a v, DotProd a v) => g -> (v a,g)
-_rndUnit g = 
+_rndUnit g =
   if d > 0.0001
     then ( v &* (1.0/d) , h )
     else _rndUnit h
@@ -99,15 +99,15 @@ _rndUnit g =
     d = normsqr v
 
 instance (Floating a, Random a, Ord a) => Random (Normal2 a) where
-  random g = let (v,h) = _rndUnit g in (Normal2 v, h)  
+  random g = let (v,h) = _rndUnit g in (Normal2 v, h)
   randomR _ = random
 
 instance (Floating a, Random a, Ord a) => Random (Normal3 a) where
-  random g = let (v,h) = _rndUnit g in (Normal3 v, h)  
+  random g = let (v,h) = _rndUnit g in (Normal3 v, h)
   randomR _ = random
 
 instance (Floating a, Random a, Ord a) => Random (Normal4 a) where
-  random g = let (v,h) = _rndUnit g in (Normal4 v, h)  
+  random g = let (v,h) = _rndUnit g in (Normal4 v, h)
   randomR _ = random
 
 instance Floating a => CrossProd (Normal3 a) where
@@ -146,7 +146,7 @@ instance Show V2 where
 
 instance (Num a, Random a) => Random (V2 a) where
   random = randomR (V2 (-1) (-1),V2 1 1)
-  randomR (V2 a b, V2 c d) gen = 
+  randomR (V2 a b, V2 c d) gen =
     let (x,gen1) = randomR (a,c) gen
         (y,gen2) = randomR (b,d) gen1
     in (V2 x y, gen2)
@@ -159,7 +159,7 @@ instance (Num a, Storable a) => Storable (V2 a) where
   peek q = do
     let p = castPtr q :: Ptr a
         k = sizeOf (undefined :: a)
-    x <- peek        p 
+    x <- peek        p
     y <- peekByteOff p k
     return (V2 x y)
 
@@ -171,7 +171,7 @@ instance (Num a, Storable a) => Storable (V2 a) where
 
 instance Num a => Dimension (V2 a) where dim _ = 2
 
---------------------------------------------------------------------------------     
+--------------------------------------------------------------------------------
 -- V3 instances
 instance HasV2 V3 where
   getV2 (V3 x y _) = V2 x y
@@ -180,8 +180,8 @@ instance HasV3 V3 where
   getV3 = id
 
 instance Num a => AbelianGroup (V3 a) where
-  (&+) (V3 x1 y1 z1) (V3 x2 y2 z2) = V3 (x1+x2) (y1+y2) (z1+z2) 
-  (&-) (V3 x1 y1 z1) (V3 x2 y2 z2) = V3 (x1-x2) (y1-y2) (z1-z2) 
+  (&+) (V3 x1 y1 z1) (V3 x2 y2 z2) = V3 (x1+x2) (y1+y2) (z1+z2)
+  (&-) (V3 x1 y1 z1) (V3 x2 y2 z2) = V3 (x1-x2) (y1-y2) (z1-z2)
   neg  (V3 x y z)                    = V3 (-x) (-y) (-z)
   zero = V3 0 0 0
 
@@ -204,17 +204,17 @@ instance Show V3 where
 
 instance (Num a, Random a) => Random (V3 a) where
   random = randomR (V3 (-1) (-1) (-1),V3 1 1 1)
-  randomR (V3 a b c, V3 d e f) gen = 
+  randomR (V3 a b c, V3 d e f) gen =
     let (x,gen1) = randomR (a,d) gen
         (y,gen2) = randomR (b,e) gen1
-        (z,gen3) = randomR (c,f) gen2  
+        (z,gen3) = randomR (c,f) gen2
     in (V3 x y z, gen3)
 
 instance Num a => CrossProd (V3 a) where
-  crossprod (V3 x1 y1 z1) (V3 x2 y2 z2) = V3 (y1*z2-y2*z1) (z1*x2-z2*x1) (x1*y2-x2*y1) 
+  crossprod (V3 x1 y1 z1) (V3 x2 y2 z2) = V3 (y1*z2-y2*z1) (z1*x2-z2*x1) (x1*y2-x2*y1)
 
 instance Num a => Determinant a (V3 a, V3 a, V3 a) where
-  det (u,v,w) = u &. (v &^ w)  
+  det (u,v,w) = u &. (v &^ w)
 
 instance (Num a, Storable a) => Storable (V3 a) where
   sizeOf    _ = (sizeOf (undefined :: a) * 3 + 3) .&. 252
@@ -223,7 +223,7 @@ instance (Num a, Storable a) => Storable (V3 a) where
   peek q = do
     let p = castPtr q :: Ptr a
         k = sizeOf (undefined :: a)
-    x <- peek        p 
+    x <- peek        p
     y <- peekByteOff p (k  )
     z <- peekByteOff p (k+k)
     return (V3 x y z)
@@ -273,11 +273,11 @@ instance Show V4 where
 
 instance (Num a, Random a) => Random (V4 a) where
   random = randomR (V4 (-1) (-1) (-1) (-1),V4 1 1 1 1)
-  randomR (V4 a b c d, V4 e f g h) gen = 
+  randomR (V4 a b c d, V4 e f g h) gen =
     let (x,gen1) = randomR (a,e) gen
         (y,gen2) = randomR (b,f) gen1
-        (z,gen3) = randomR (c,g) gen2  
-        (w,gen4) = randomR (d,h) gen3  
+        (z,gen3) = randomR (c,g) gen2
+        (w,gen4) = randomR (d,h) gen3
     in (V4 x y z w, gen4)
 
 instance (Num a, Storable a) => Storable (V4 a) where
@@ -287,7 +287,7 @@ instance (Num a, Storable a) => Storable (V4 a) where
   peek q = do
     let p = castPtr q :: Ptr a
         k = sizeOf (undefined :: a)
-    x <- peek        p 
+    x <- peek        p
     y <- peekByteOff p (k  )
     z <- peekByteOff p (k+k)
     w <- peekByteOff p (3*k)
@@ -314,10 +314,9 @@ instance Num a => Extend a V2 V3 where
 instance Num a => Extend a V2 V4 where
   extendZero   (V2 x y) = V4 x y 0 0
   extendWith t (V2 x y) = V4 x y t t
-  trim (V4 x y _ _)     = V2 x y 
+  trim (V4 x y _ _)     = V2 x y
 
 instance Num a => Extend a V3 V4 where
   extendZero   (V3 x y z) = V4 x y z 0
   extendWith t (V3 x y z) = V4 x y z t
   trim (V4 x y z _)       = V3 x y z
-

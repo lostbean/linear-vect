@@ -24,21 +24,21 @@ class AbelianGroup g where
   zero :: g
 
 infixl 6 &+
-infixl 6 &- 
+infixl 6 &-
 
 vecSum :: AbelianGroup g => [g] -> g
-vecSum l = foldl (&+) zero l 
+vecSum l = foldl (&+) zero l
 
 class MultSemiGroup r where
   (.*.) :: r -> r -> r
   one   :: r
 
-class (AbelianGroup r, MultSemiGroup r) => Ring r 
+class (AbelianGroup r, MultSemiGroup r) => Ring r
 
-infixl 7 .*. 
+infixl 7 .*.
 
 -- was: ringProduct :: Ring r => [r] -> r
-semigroupProduct :: MultSemiGroup r => [r] -> r 
+semigroupProduct :: MultSemiGroup r => [r] -> r
 semigroupProduct l = foldl (.*.) one l
 
 class LeftModule r m where
@@ -51,9 +51,9 @@ class RightModule m r | m -> r, r -> m where
   (.*) :: m -> r -> m
   (.*) = rmul
 
--- I'm not really sure about this.. may actually degrade the performance in some cases?  
+-- I'm not really sure about this.. may actually degrade the performance in some cases?
 {- RULES
-"matrix multiplication left"   forall m n x.  (n .*. m) *. x = n *. (m *. x)  
+"matrix multiplication left"   forall m n x.  (n .*. m) *. x = n *. (m *. x)
 "matrix multiplication right"  forall m n x.  x .* (m .*. n) = (x .* m) .* n
   -}
 
@@ -64,7 +64,7 @@ class AbelianGroup (v a) => Vector a v where
   mapVec    :: (a -> a) -> v a -> v a
   scalarMul :: a -> v a -> v a
   (*&) ::      a -> v a -> v a
-  (&*) ::      v a -> a -> v a 
+  (&*) ::      v a -> a -> v a
   (*&) s v = scalarMul s v
   (&*) v s = scalarMul s v
 
@@ -72,8 +72,8 @@ infixr 7 *&
 infixl 7 &*
 
 {-# RULES
-"scalar multiplication left"   forall (s :: Num s => s) (t :: Num t => t) x. t *& (s *& x) = (t*s) *& x 
-"scalar multiplication right"  forall (s :: Num s => s) (t :: Num t => t) x.  (x &* s) &* t = x &* (s*t)  
+"scalar multiplication left"   forall (s :: Num s => s) (t :: Num t => t) x. t *& (s *& x) = (t*s) *& x
+"scalar multiplication right"  forall (s :: Num s => s) (t :: Num t => t) x.  (x &* s) &* t = x &* (s*t)
   #-}
 
 class Num a => DotProd a v where
@@ -108,7 +108,7 @@ distance :: (Vector a v, Norm a v) => v a -> v a -> a
 distance x y = norm (x &- y)
 
 -- | the angle between two vectors
-angle :: (Vector a v, Norm a v) => v a -> v a -> a 
+angle :: (Vector a v, Norm a v) => v a -> v a -> a
 angle x y = acos $ (x &. y) / (norm x * norm y)
 
 -- | the angle between two unit vectors
@@ -124,7 +124,7 @@ class (Vector a v, Norm a v) => UnitVector a v u | u -> v, v -> u where
   toNormalUnsafe   :: v a -> u a       -- ^ does not normalize the input!
   fromNormal       :: u a -> v a
   fromNormalRadius :: a -> u a -> v a
-  fromNormalRadius t n = t *& fromNormal n 
+  fromNormalRadius t n = t *& fromNormal n
 
 -- | Projects the first vector down to the hyperplane orthogonal to the second (unit) vector
 project' :: (Vector a v, UnitVector a v u, Norm a v) => v a -> u a -> v a
@@ -139,19 +139,19 @@ project what dir = what &- dir &* ((what &. dir) / (dir &. dir))
 
 -- | Since unit vectors are not a group, we need a separate function.
 flipNormal :: UnitVector a v n => n a -> n a
-flipNormal = toNormalUnsafe . neg . fromNormal 
+flipNormal = toNormalUnsafe . neg . fromNormal
 
 -- | Cross product
 class CrossProd v where
   crossprod :: v -> v -> v
   (&^)      :: v -> v -> v
   (&^) = crossprod
- 
--- | Pointwise multiplication 
+
+-- | Pointwise multiplication
 class Pointwise v where
   pointwise :: v -> v -> v
   (&!)      :: v -> v -> v
-  (&!) = pointwise 
+  (&!) = pointwise
 
 infix 7 &^
 infix 7 &!
@@ -177,32 +177,32 @@ class SquareMatrix m where
 "transpose is an involution"  forall m. transpose (transpose m) = m
 "inverse is an involution"    forall m. inverse (inverse m) = m
   #-}
-  
+
 class SquareMatrix (m a) => Orthogonal a m o | m -> o, o -> m where
   fromOrtho     :: o a -> m a
   toOrthoUnsafe :: m a -> o a
-  
+
 class (AbelianGroup m, SquareMatrix m) => MatrixNorms a m where
   frobeniusNorm  :: m -> a       -- ^ the frobenius norm (= euclidean norm in the space of matrices)
   matrixDistance :: m -> m -> a  -- ^ euclidean distance in the space of matrices
   operatorNorm   :: m -> a      -- ^ (euclidean) operator norm (not implemented yet)
   matrixDistance m n = frobeniusNorm (n &- m)
   operatorNorm = error "operatorNorm: not implemented yet"
-  
+
 -- | Outer product (could be unified with Diagonal?)
 class Tensor t v | t -> v where
   outer :: v -> v -> t
-    
+
 class Determinant a m where
   det :: m -> a
 
 class Dimension a where
   dim :: a -> Int
-     
--- | Householder matrix, see <http://en.wikipedia.org/wiki/Householder_transformation>.  
+
+-- | Householder matrix, see <http://en.wikipedia.org/wiki/Householder_transformation>.
 -- In plain words, it is the reflection to the hyperplane orthogonal to the input vector.
 householder :: (Vector a v, UnitVector a v u, SquareMatrix (m a), Vector a m, Tensor (m a) (v a)) => u a -> m a
-householder u = idmtx &- (2 *& outer v v) 
+householder u = idmtx &- (2 *& outer v v)
   where v = fromNormal u
 
 householderOrtho :: (Vector a v, UnitVector a v u, SquareMatrix (m a), Vector a m, Tensor (m a) (v a), Orthogonal a m o) => u a -> o a
@@ -219,4 +219,3 @@ class (Vector a v, Orthogonal a n o, Diagonal (v a) (n a)) => Projective a v n o
   linear             :: n a -> p a
   translation        :: v a -> p a
   scaling            :: v a -> p a
-
