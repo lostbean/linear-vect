@@ -98,7 +98,7 @@ instance Floating a => UnitVector a Vec4 Normal4 where
   fromNormal (Normal4 v) = v
   toNormalUnsafe = Normal4
 
-_rndUnit :: (Fractional a, Ord a, RandomGen g, Random (v a), Vector a v, DotProd a v) => g -> (v a,g)
+_rndUnit :: (Fractional a, Ord a, RandomGen g, Random (v a), LinearMap a v, DotProd a v) => g -> (v a,g)
 _rndUnit g =
   if d > 0.0001
     then ( v &* (1.0/d) , h )
@@ -133,7 +133,7 @@ instance Num a => AbelianGroup (Vec2 a) where
   neg  (Vec2 x y)                = Vec2 (-x) (-y)
   zero = Vec2 0 0
 
-instance Num a => Vector a Vec2 where
+instance Num a => LinearMap a Vec2 where
   scalarMul s (Vec2 x y) = Vec2 (s*x) (s*y)
   mapVec    f (Vec2 x y) = Vec2 (f x) (f y)
 
@@ -215,7 +215,7 @@ instance Num a => AbelianGroup (Vec3 a) where
   neg  (Vec3 x y z)                    = Vec3 (-x) (-y) (-z)
   zero = Vec3 0 0 0
 
-instance Num a => Vector a Vec3 where
+instance Num a => LinearMap a Vec3 where
   scalarMul s (Vec3 x y z) = Vec3 (s*x) (s*y) (s*z)
   mapVec    f (Vec3 x y z) = Vec3 (f x) (f y) (f z)
 
@@ -308,7 +308,7 @@ instance Num a => AbelianGroup (Vec4 a) where
   neg  (Vec4 x y z w)                      = Vec4 (-x) (-y) (-z) (-w)
   zero = Vec4 0 0 0 0
 
-instance Num a => Vector a Vec4 where
+instance Num a => LinearMap a Vec4 where
   scalarMul s (Vec4 x y z w) = Vec4 (s*x) (s*y) (s*z) (s*w)
   mapVec    f (Vec4 x y z w) = Vec4 (f x) (f y) (f z) (f w)
 

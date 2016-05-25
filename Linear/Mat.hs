@@ -211,7 +211,7 @@ instance Num a => AbelianGroup (Mat2 a) where
   neg  (Mat2 r1 r2)              = Mat2 (neg r1) (neg r2)
   zero = Mat2 zero zero
 
-instance Num a => Vector a Mat2 where
+instance Num a => LinearMap a Mat2 where
   scalarMul s (Mat2 r1 r2) = Mat2 (g r1) (g r2) where g = scalarMul s
   mapVec    f (Mat2 r1 r2) = Mat2 (g r1) (g r2) where g = mapVec f
 
@@ -334,7 +334,7 @@ instance Num a => AbelianGroup (Mat3 a) where
   neg  (Mat3 r1 r2 r3)                 = Mat3 (neg r1) (neg r2) (neg r3)
   zero = Mat3 zero zero zero
 
-instance Num a => Vector a Mat3 where
+instance Num a => LinearMap a Mat3 where
   scalarMul s (Mat3 r1 r2 r3) = Mat3 (g r1) (g r2) (g r3) where g = scalarMul s
   mapVec    f (Mat3 r1 r2 r3) = Mat3 (g r1) (g r2) (g r3) where g = mapVec f
 
@@ -448,7 +448,7 @@ instance Num a => AbelianGroup (Mat4 a) where
   neg  (Mat4 r1 r2 r3 r4)                  = Mat4 (neg r1) (neg r2) (neg r3) (neg r4)
   zero = Mat4 zero zero zero zero
 
-instance Num a => Vector a Mat4 where
+instance Num a => LinearMap a Mat4 where
   scalarMul s (Mat4 r1 r2 r3 r4) = Mat4 (g r1) (g r2) (g r3) (g r4) where g = scalarMul s
   mapVec    f (Mat4 r1 r2 r3 r4) = Mat4 (g r1) (g r2) (g r3) (g r4) where g = mapVec f
 

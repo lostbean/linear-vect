@@ -5,7 +5,7 @@ module Linear.Class
   ( AbelianGroup(..) , vecSum
   , MultSemiGroup(..) , Ring , semigroupProduct
   , LeftModule(..) , RightModule(..)
-  , Vector(..) , DotProd(..) , Norm(..) , CrossProd(..)
+  , LinearMap(..) , DotProd(..) , Norm(..) , CrossProd(..)
   , normalize , distance , angle , angle'
   , UnitVector(..)
   , Pointwise(..)
@@ -64,7 +64,7 @@ class RightModule m r | m -> r, r -> m where
 infixr 7 *.
 infixl 7 .*
 
-class AbelianGroup (v a) => Vector a v where
+class AbelianGroup (v a) => LinearMap a v where
   mapVec    :: (a -> a) -> v a -> v a
   scalarMul :: a -> v a -> v a
   (*&) ::      a -> v a -> v a
@@ -105,25 +105,25 @@ infix 7 &.
   #-}
 
 
-normalize :: (Vector a v, Norm a v) => v a -> v a
+normalize :: (LinearMap a v, Norm a v) => v a -> v a
 normalize v = scalarMul (recip (vlen v)) v
 
-distance :: (Vector a v, Norm a v) => v a -> v a -> a
+distance :: (LinearMap a v, Norm a v) => v a -> v a -> a
 distance x y = norm (x &- y)
 
 -- | the angle between two vectors
-angle :: (Vector a v, Norm a v) => v a -> v a -> a
+angle :: (LinearMap a v, Norm a v) => v a -> v a -> a
 angle x y = acos $ (x &. y) / (norm x * norm y)
 
 -- | the angle between two unit vectors
-angle' {- ' CPP is sensitive to primes -} :: (Floating a, Vector a v, UnitVector a v u, DotProd a v) => u a -> u a -> a
+angle' {- ' CPP is sensitive to primes -} :: (Floating a, LinearMap a v, UnitVector a v u, DotProd a v) => u a -> u a -> a
 angle' x y = acos (fromNormal x &. fromNormal y)
 
 {-# RULES
 "normalize is idempotent"  forall x. normalize (normalize x) = normalize x
   #-}
 
-class (Vector a v, Norm a v) => UnitVector a v u | u -> v, v -> u where
+class (LinearMap a v, Norm a v) => UnitVector a v u | u -> v, v -> u where
   mkNormal         :: v a -> u a       -- ^ normalizes the input
   toNormalUnsafe   :: v a -> u a       -- ^ does not normalize the input!
   fromNormal       :: u a -> v a
@@ -131,14 +131,14 @@ class (Vector a v, Norm a v) => UnitVector a v u | u -> v, v -> u where
   fromNormalRadius t n = t *& fromNormal n
 
 -- | Projects the first vector down to the hyperplane orthogonal to the second (unit) vector
-project' :: (Vector a v, UnitVector a v u, Norm a v) => v a -> u a -> v a
+project' :: (LinearMap a v, UnitVector a v u, Norm a v) => v a -> u a -> v a
 project' what dir = projectUnsafe what (fromNormal dir)
 
 -- | Direction (second argument) is assumed to be a /unit/ vector!
-projectUnsafe :: (Vector a v, DotProd a v) => v a -> v a -> v a
+projectUnsafe :: (LinearMap a v, DotProd a v) => v a -> v a -> v a
 projectUnsafe what dir = what &- dir &* (what &. dir)
 
-project :: (Fractional a, Vector a v, DotProd a v) => v a -> v a -> v a
+project :: (Fractional a, LinearMap a v, DotProd a v) => v a -> v a -> v a
 project what dir = what &- dir &* ((what &. dir) / (dir &. dir))
 
 -- | Since unit vectors are not a group, we need a separate function.
@@ -209,18 +209,18 @@ class Dimension a where
 
 -- | Householder matrix, see <http://en.wikipedia.org/wiki/Householder_transformation>.
 -- In plain words, it is the reflection to the hyperplane orthogonal to the input vector.
-householder :: (Vector a v, UnitVector a v u, SquareMatrix (m a), Vector a m, Tensor (m a) (v a)) => u a -> m a
+householder :: (LinearMap a v, UnitVector a v u, SquareMatrix (m a), LinearMap a m, Tensor (m a) (v a)) => u a -> m a
 householder u = idmtx &- (2 *& outer v v)
   where v = fromNormal u
 
-householderOrtho :: (Vector a v, UnitVector a v u, SquareMatrix (m a), Vector a m, Tensor (m a) (v a), Orthogonal a m o) => u a -> o a
+householderOrtho :: (LinearMap a v, UnitVector a v u, SquareMatrix (m a), LinearMap a m, Tensor (m a) (v a), Orthogonal a m o) => u a -> o a
 householderOrtho = toOrthoUnsafe . householder
 
 -- | \"Projective\" matrices have the following form: the top left corner
 -- is an any matrix, the bottom right corner is 1, and the top-right
 -- column is zero. These describe the affine orthogonal transformation of
 -- the space one dimension less.
-class (Vector a v, Orthogonal a n o, Diagonal (v a) (n a)) => Projective a v n o m p | m -> p, p -> m, p -> o, o -> p, p -> n, n -> p, p -> v, v -> p, n -> o, n -> v, v -> n where
+class (LinearMap a v, Orthogonal a n o, Diagonal (v a) (n a)) => Projective a v n o m p | m -> p, p -> m, p -> o, o -> p, p -> n, n -> p, p -> v, v -> p, n -> o, n -> v, v -> n where
   fromProjective     :: p a -> m a
   toProjectiveUnsafe :: m a -> p a
   orthogonal         :: o a -> p a
