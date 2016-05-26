@@ -16,6 +16,14 @@ module Linear.Vect
   , unVec2
   , unVec3
   , unVec4
+
+  -- * Alias
+  , Vec2D
+  , Vec3D
+  , Vec4D
+  , Normal2D
+  , Normal3D
+  , Normal4D
   ) where
 
 import Control.DeepSeq
@@ -66,6 +74,14 @@ unVec4 :: Vec4 a -> (a, a, a, a)
 unVec2 (Vec2 x y)     = (x,y)
 unVec3 (Vec3 x y z)   = (x,y,z)
 unVec4 (Vec4 x y z w) = (x,y,z,w)
+
+type Vec2D = Vec2 Double
+type Vec3D = Vec3 Double
+type Vec4D = Vec4 Double
+
+type Normal2D = Normal2 Double
+type Normal3D = Normal3 Double
+type Normal4D = Normal4 Double
 
 class HasV2 v where
   getV2 :: v a -> Vec2 a
@@ -313,7 +329,7 @@ instance HasV2 Vec4 where
   getV2 (Vec4 x y _ _) = Vec2 x y
 
 instance HasV3 Vec4 where
-  getV3 (Vec4 x y z w) = Vec3 x y z
+  getV3 (Vec4 x y z _) = Vec3 x y z
 
 instance HasV4 Vec4 where
   getV4 = id

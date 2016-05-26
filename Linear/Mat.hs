@@ -13,8 +13,11 @@ module Linear.Mat
   , Mat3x4(..) , Mat4x2(..) , Mat4x3(..)
   , Ortho2 , Ortho3 , Ortho4
   , Proj3 , Proj4
-  )
-where
+  -- * Alias
+  , Mat2D
+  , Mat3D
+  , Mat4D
+  ) where
 
 import Control.DeepSeq
 import Data.Vector.Unboxed (Unbox)
@@ -52,6 +55,10 @@ newtype Ortho4 a = Ortho4 (Mat4 a) deriving (Read,Show,Storable,MultSemiGroup,De
 -- | Projective matrices, encoding affine transformations in dimension one less.
 newtype Proj3 a = Proj3 (Mat3 a) deriving (Read,Show,Storable,MultSemiGroup)
 newtype Proj4 a = Proj4 (Mat4 a) deriving (Read,Show,Storable,MultSemiGroup)
+
+type Mat2D = Mat2 Double
+type Mat3D = Mat3 Double
+type Mat4D = Mat4 Double
 
 --------------------------------------------------------------------------------
 -- Orthogonal matrices
@@ -603,7 +610,7 @@ instance Transpose (Mat3x4 a) (Mat4x3 a) where
 
 instance Transpose (Mat4x2 a) (Mat2x4 a) where
   transpose (Mat4x2 a b  c d  e f  g h) =
-    Mat2x4 a c e f  b d f h
+    Mat2x4 a c e g  b d f h
 
 instance Transpose (Mat4x3 a) (Mat3x4 a) where
   transpose (Mat4x3 a b c  d e f  g h i  j k l) =
