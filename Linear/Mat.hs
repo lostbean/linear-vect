@@ -37,27 +37,27 @@ import Linear.Vect
 
 -- | The components are /row/ vectors
 
-data Mat2 a = Mat2 !(Vec2 a) !(Vec2 a) deriving (Read,Show)
-data Mat3 a = Mat3 !(Vec3 a) !(Vec3 a) !(Vec3 a) deriving (Read,Show)
-data Mat4 a = Mat4 !(Vec4 a) !(Vec4 a) !(Vec4 a) !(Vec4 a) deriving (Read,Show)
-data Mat2x3 a = Mat2x3 !a !a !a !a !a !a deriving (Read,Show)
-data Mat2x4 a = Mat2x4 !a !a !a !a !a !a !a !a deriving (Read,Show)
-data Mat3x2 a = Mat3x2 !a !a !a !a !a !a deriving (Read,Show)
-data Mat3x4 a = Mat3x4 !a !a !a !a !a !a !a !a !a !a !a !a deriving (Read,Show)
-data Mat4x2 a = Mat4x2 !a !a !a !a !a !a !a !a deriving (Read,Show)
-data Mat4x3 a = Mat4x3 !a !a !a !a !a !a !a !a !a !a !a !a deriving (Read,Show)
+data Mat2 a   = Mat2 !(Vec2 a) !(Vec2 a)                     deriving (Read, Eq, Show)
+data Mat3 a   = Mat3 !(Vec3 a) !(Vec3 a) !(Vec3 a)           deriving (Read, Eq, Show)
+data Mat4 a   = Mat4 !(Vec4 a) !(Vec4 a) !(Vec4 a) !(Vec4 a) deriving (Read, Eq, Show)
+data Mat2x3 a = Mat2x3 !a !a !a !a !a !a                     deriving (Read, Eq, Show)
+data Mat2x4 a = Mat2x4 !a !a !a !a !a !a !a !a               deriving (Read, Eq, Show)
+data Mat3x2 a = Mat3x2 !a !a !a !a !a !a                     deriving (Read, Eq, Show)
+data Mat3x4 a = Mat3x4 !a !a !a !a !a !a !a !a !a !a !a !a   deriving (Read, Eq, Show)
+data Mat4x2 a = Mat4x2 !a !a !a !a !a !a !a !a               deriving (Read, Eq, Show)
+data Mat4x3 a = Mat4x3 !a !a !a !a !a !a !a !a !a !a !a !a   deriving (Read, Eq, Show)
 
 -- | Orthogonal matrices.
 --
 -- Note: the "Random" instances generates orthogonal matrices with determinant 1
 -- (that is, orientation-preserving orthogonal transformations)!
-newtype Ortho2 a = Ortho2 (Mat2 a) deriving (Read,Show,Storable,MultSemiGroup,Determinant a,Dimension)
-newtype Ortho3 a = Ortho3 (Mat3 a) deriving (Read,Show,Storable,MultSemiGroup,Determinant a,Dimension)
-newtype Ortho4 a = Ortho4 (Mat4 a) deriving (Read,Show,Storable,MultSemiGroup,Determinant a,Dimension)
+newtype Ortho2 a = Ortho2 (Mat2 a) deriving (Read, Eq, Show, Storable, MultSemiGroup, Determinant a, Dimension)
+newtype Ortho3 a = Ortho3 (Mat3 a) deriving (Read, Eq, Show, Storable, MultSemiGroup, Determinant a, Dimension)
+newtype Ortho4 a = Ortho4 (Mat4 a) deriving (Read, Eq, Show, Storable, MultSemiGroup, Determinant a, Dimension)
 
 -- | Projective matrices, encoding affine transformations in dimension one less.
-newtype Proj3 a = Proj3 (Mat3 a) deriving (Read,Show,Storable,MultSemiGroup)
-newtype Proj4 a = Proj4 (Mat4 a) deriving (Read,Show,Storable,MultSemiGroup)
+newtype Proj3 a = Proj3 (Mat3 a) deriving (Read, Eq, Show, Storable, MultSemiGroup)
+newtype Proj4 a = Proj4 (Mat4 a) deriving (Read, Eq, Show, Storable, MultSemiGroup)
 
 type Mat2D = Mat2 Double
 type Mat3D = Mat3 Double

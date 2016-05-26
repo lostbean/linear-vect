@@ -44,17 +44,17 @@ import Linear.Class
 -- Vec datatypes
 
 data Vec2 a = Vec2 !a !a
-  deriving (Read,Show)
+  deriving (Read, Show, Eq)
 data Vec3 a = Vec3 !a !a !a
-  deriving (Read,Show)
+  deriving (Read, Show, Eq)
 data Vec4 a = Vec4 !a !a !a !a
-  deriving (Read,Show)
+  deriving (Read, Show, Eq)
 
 -- | The assumption when dealing with these is always that they are of unit length.
 -- Also, interpolation works differently.
-newtype Normal2 a = Normal2 {unNormal2 :: Vec2 a} deriving (Read,Show,Storable,Dimension)
-newtype Normal3 a = Normal3 {unNormal3 :: Vec3 a} deriving (Read,Show,Storable,Dimension)
-newtype Normal4 a = Normal4 {unNormal4 :: Vec4 a} deriving (Read,Show,Storable,Dimension)
+newtype Normal2 a = Normal2 {unNormal2 :: Vec2 a} deriving (Read, Eq, Show, Storable, Dimension)
+newtype Normal3 a = Normal3 {unNormal3 :: Vec3 a} deriving (Read, Eq, Show, Storable, Dimension)
+newtype Normal4 a = Normal4 {unNormal4 :: Vec4 a} deriving (Read, Eq, Show, Storable, Dimension)
 
 deriving instance Floating a => DotProd a Normal2
 deriving instance Floating a => DotProd a Normal3
