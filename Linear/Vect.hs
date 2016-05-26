@@ -14,10 +14,12 @@ module Linear.Vect
   )
 where
 
+import Control.DeepSeq
 import Data.Bits
 import Foreign.Storable
 import Foreign.Ptr
 import System.Random
+
 import Linear.Class
 
 --------------------------------------------------------------------------------
@@ -410,3 +412,14 @@ instance Num a => Extend a Vec3 Vec4 where
   extendZero       (Vec3 x y z) = Vec4 x y z 0
   extendWith     t (Vec3 x y z) = Vec4 x y z t
   trim           (Vec4 x y z _) = Vec3 x y z
+
+-- --------------------------------- NFData ---------------------------------------------
+
+instance NFData a => NFData (Vec2 a) where
+  rnf (Vec2 a b) = a `seq` b `seq` ()
+
+instance NFData a => NFData (Vec3 a) where
+  rnf (Vec3 a b c) = a `seq` b `seq` c `seq` ()
+
+instance NFData a => NFData (Vec4 a) where
+  rnf (Vec4 a b c d) = a `seq` b `seq` c `seq` d `seq` ()

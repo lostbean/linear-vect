@@ -14,9 +14,11 @@ module Linear.Mat
   )
 where
 
+import Control.DeepSeq
 import Foreign.Storable
 import Foreign.Ptr
 import System.Random
+
 import Linear.Class
 import Linear.Vect
 
@@ -784,3 +786,14 @@ instance Storable a => Storable (Mat4x3 a) where
     pokeByteOff p (9*k) ra
     pokeByteOff p (10*k) rb
     pokeByteOff p (11*k) rc
+
+-- --------------------------------- NFData ---------------------------------------------
+
+instance NFData a => NFData (Mat2 a) where
+  rnf (Mat2 a b) = a `seq` b `seq` ()
+
+instance NFData a => NFData (Mat3 a) where
+  rnf (Mat3 a b c) = a `seq` b `seq` c `seq` ()
+
+instance NFData a => NFData (Mat4 a) where
+  rnf (Mat4 a b c d) = a `seq` b `seq` c `seq` d `seq` ()
