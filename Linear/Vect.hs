@@ -13,8 +13,10 @@ module Linear.Vect
   , mkVec2, mkVec3, mkVec4
   , HasV2, HasV3, HasV4
   , _x, _y, _z, _w
-  )
-where
+  , unVec2
+  , unVec3
+  , unVec4
+  ) where
 
 import Control.DeepSeq
 import Data.Bits
@@ -56,6 +58,14 @@ mkVec4 :: (a,a,a,a) -> Vec4 a
 mkVec2 (x,y)     = Vec2 x y
 mkVec3 (x,y,z)   = Vec3 x y z
 mkVec4 (x,y,z,w) = Vec4 x y z w
+
+unVec2 :: Vec2 a -> (a, a)
+unVec3 :: Vec3 a -> (a, a, a)
+unVec4 :: Vec4 a -> (a, a, a, a)
+
+unVec2 (Vec2 x y)     = (x,y)
+unVec3 (Vec3 x y z)   = (x,y,z)
+unVec4 (Vec4 x y z w) = (x,y,z,w)
 
 class HasV2 v where
   getV2 :: v a -> Vec2 a
