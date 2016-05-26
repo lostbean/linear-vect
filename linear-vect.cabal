@@ -1,5 +1,5 @@
 name:                linear-vect
-version:             0.1.1.0
+version:             0.2.0
 synopsis:            A low-dimensional linear algebra library, operating on the Num typeclass
 description:         A low-dimensional (2, 3, 4 and Quaternions) linear algebra library,
 		     with lots of useful functions. Forked from vect library at <http://hackage.haskell.org/package/vect>
@@ -23,12 +23,15 @@ library
   exposed-modules:     Linear.Vect
                      , Linear.Class
                      , Linear.Mat
-  build-depends:       base   >= 4.7 && < 4.9
-                     , random >= 1.0 && < 1.2
+
+  build-depends:       base            >= 4.7 && < 4.9
+                     , random          >= 1.0 && < 1.2
                      , deepseq         >= 1.2
                      , vector          >= 0.10
                      , vector-th-unbox >= 0.2.1
+
   default-language:    Haskell2010
+
   other-extensions:    FlexibleContexts
                      , FlexibleInstances
                      , GeneralizedNewtypeDeriving
