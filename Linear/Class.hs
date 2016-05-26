@@ -6,7 +6,7 @@ module Linear.Class
   , MultSemiGroup(..) , Ring , semigroupProduct
   , LeftModule(..) , RightModule(..)
   , LinearMap(..) , DotProd(..) , Norm(..) , CrossProd(..)
-  , normalize , distance , angle , angle'
+  , normalize , distance , angle , angle' , acosSafe
   , UnitVector(..)
   , Pointwise(..)
   , Extend(..) , Dimension(..) , Transpose(..)
@@ -18,6 +18,7 @@ module Linear.Class
   , HasTwo   (..)
   , HasThree (..)
   , HasFour  (..)
+  , NearZero (..)
   )
 where
 
@@ -112,12 +113,23 @@ distance :: (LinearMap a v, Norm a v) => v a -> v a -> a
 distance x y = norm (x &- y)
 
 -- | the angle between two vectors
-angle :: (LinearMap a v, Norm a v) => v a -> v a -> a
-angle x y = acos $ (x &. y) / (norm x * norm y)
+angle :: (Ord a, NearZero a, LinearMap a v, Norm a v) => v a -> v a -> a
+angle x y = acosSafe $ (x &. y) / (norm x * norm y)
 
 -- | the angle between two unit vectors
-angle' {- ' CPP is sensitive to primes -} :: (Floating a, LinearMap a v, UnitVector a v u, DotProd a v) => u a -> u a -> a
-angle' x y = acos (fromNormal x &. fromNormal y)
+angle' :: (Floating a, Ord a, NearZero a, LinearMap a v, UnitVector a v u, DotProd a v) => u a -> u a -> a
+angle' x y = acosSafe (fromNormal x &. fromNormal y)
+
+-- | Safe version of 'acos' function where its boudaries (@1@ and @-1@) acepts a small
+-- truncation error like @1.00000000000001@ instead of returning @NaN@. The value is
+-- round to the closest valid boundary.
+acosSafe :: (Floating a, Ord a, NearZero a)=> a -> a
+acosSafe x
+  | isOne     = acos signOne
+  | otherwise = acos x
+  where
+    isOne   = isMainlyZero (x - signOne)
+    signOne = signum x
 
 {-# RULES
 "normalize is idempotent"  forall x. normalize (normalize x) = normalize x
@@ -228,15 +240,23 @@ class (LinearMap a v, Orthogonal a n o, Diagonal (v a) (n a)) => Projective a v 
   translation        :: v a -> p a
   scaling            :: v a -> p a
 
-
 class HasOne v where
   _1 :: v a -> a
-
 class HasTwo v where
   _2 :: v a -> a
-
 class HasThree v where
   _3 :: v a -> a
-
 class HasFour v where
   _4 :: v a -> a
+
+class Num a => NearZero a where
+  epsilon      :: a
+
+  isMainlyZero :: Ord a => a -> Bool
+  isMainlyZero = (< epsilon) . abs
+
+instance NearZero Int where
+  epsilon = 0
+
+instance NearZero Double where
+  epsilon = 1e-12
