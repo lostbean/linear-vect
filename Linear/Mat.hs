@@ -4,6 +4,8 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Linear.Mat
   ( Mat2(..) , Mat3(..) , Mat4(..)
@@ -15,6 +17,8 @@ module Linear.Mat
 where
 
 import Control.DeepSeq
+import Data.Vector.Unboxed (Unbox)
+import Data.Vector.Unboxed.Deriving
 import Foreign.Storable
 import Foreign.Ptr
 import System.Random
@@ -797,3 +801,20 @@ instance NFData a => NFData (Mat3 a) where
 
 instance NFData a => NFData (Mat4 a) where
   rnf (Mat4 a b c d) = a `seq` b `seq` c `seq` d `seq` ()
+
+-- ---------------------------------- Unbox ----------------------------------------------
+
+derivingUnbox "Mat2"
+    [t| forall a . (Unbox a) => Mat2 a -> (Vec2 a, Vec2 a) |]
+    [| \ (Mat2 x y) -> (x, y) |]
+    [| \ (x, y) -> (Mat2 x y) |]
+
+derivingUnbox "Mat3"
+    [t| forall a . (Unbox a) => Mat3 a -> (Vec3 a, Vec3 a, Vec3 a) |]
+    [| \ (Mat3 x y z) -> (x, y, z) |]
+    [| \ (x, y, z) -> (Mat3 x y z) |]
+
+derivingUnbox "Mat4"
+    [t| forall a . (Unbox a) => Mat4 a -> (Vec4 a, Vec4 a, Vec4 a, Vec4 a) |]
+    [| \ (Mat4 x y z t) -> (x, y, z, t) |]
+    [| \ (x, y, z, t) -> (Mat4 x y z t) |]

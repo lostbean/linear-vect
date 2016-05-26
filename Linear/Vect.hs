@@ -4,6 +4,8 @@
 {-# LANGUAGE MultiParamTypeClasses #-}
 {-# LANGUAGE ScopedTypeVariables #-}
 {-# LANGUAGE StandaloneDeriving #-}
+{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE TypeFamilies #-}
 
 module Linear.Vect
   ( Vec2(..), Vec3(..), Vec4(..)
@@ -16,6 +18,8 @@ where
 
 import Control.DeepSeq
 import Data.Bits
+import Data.Vector.Unboxed (Unbox)
+import Data.Vector.Unboxed.Deriving
 import Foreign.Storable
 import Foreign.Ptr
 import System.Random
@@ -423,3 +427,35 @@ instance NFData a => NFData (Vec3 a) where
 
 instance NFData a => NFData (Vec4 a) where
   rnf (Vec4 a b c d) = a `seq` b `seq` c `seq` d `seq` ()
+
+-- ---------------------------------- Unbox ----------------------------------------------
+
+derivingUnbox "Vec2"
+    [t| forall a . (Unbox a) => Vec2 a -> (a, a) |]
+    [| \ (Vec2 x y) -> (x, y) |]
+    [| \ (x, y) -> (Vec2 x y) |]
+
+derivingUnbox "Vec3"
+    [t| forall a . (Unbox a) => Vec3 a -> (a, a, a) |]
+    [| \ (Vec3 x y z) -> (x, y, z) |]
+    [| \ (x, y, z) -> (Vec3 x y z) |]
+
+derivingUnbox "Vec4"
+    [t| forall a . (Unbox a) => Vec4 a -> (a, a, a, a) |]
+    [| \ (Vec4 x y z t) -> (x, y, z, t) |]
+    [| \ (x, y, z, t) -> (Vec4 x y z t) |]
+
+derivingUnbox "Normal2"
+    [t| forall a . (Unbox a) => Normal2 a -> (a, a) |]
+    [| \ (Normal2 (Vec2 x y)) -> (x, y) |]
+    [| \ (x, y) -> (Normal2 (Vec2 x y)) |]
+
+derivingUnbox "Normal3"
+    [t| forall a . (Unbox a) => Normal3 a -> (a, a, a) |]
+    [| \ (Normal3 (Vec3 x y z)) -> (x, y, z) |]
+    [| \ (x, y, z) -> (Normal3 (Vec3 x y z)) |]
+
+derivingUnbox "Normal4"
+    [t| forall a . (Unbox a) => Normal4 a -> (a, a, a, a) |]
+    [| \ (Normal4 (Vec4 x y z t)) -> (x, y, z, t) |]
+    [| \ (x, y, z, t) -> (Normal4 (Vec4 x y z t)) |]
