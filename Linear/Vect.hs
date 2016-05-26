@@ -48,9 +48,9 @@ data Vec4 a = Vec4 !a !a !a !a
 
 -- | The assumption when dealing with these is always that they are of unit length.
 -- Also, interpolation works differently.
-newtype Normal2 a = Normal2 (Vec2 a) deriving (Read,Show,Storable,Dimension)
-newtype Normal3 a = Normal3 (Vec3 a) deriving (Read,Show,Storable,Dimension)
-newtype Normal4 a = Normal4 (Vec4 a) deriving (Read,Show,Storable,Dimension)
+newtype Normal2 a = Normal2 {unNormal2 :: Vec2 a} deriving (Read,Show,Storable,Dimension)
+newtype Normal3 a = Normal3 {unNormal3 :: Vec3 a} deriving (Read,Show,Storable,Dimension)
+newtype Normal4 a = Normal4 {unNormal4 :: Vec4 a} deriving (Read,Show,Storable,Dimension)
 
 deriving instance Floating a => DotProd a Normal2
 deriving instance Floating a => DotProd a Normal3
