@@ -62,6 +62,13 @@ type Mat2D = Mat2 Double
 type Mat3D = Mat3 Double
 type Mat4D = Mat4 Double
 
+instance PrettyShow Mat2D where
+  showPretty (Mat2 a b) = unlines [showPretty a, showPretty b]
+instance PrettyShow Mat3D where
+  showPretty (Mat3 a b c) = unlines [showPretty a, showPretty b, showPretty c]
+instance PrettyShow Mat4D where
+  showPretty (Mat4 a b c d) = unlines [showPretty a, showPretty b, showPretty c, showPretty d]
+
 --------------------------------------------------------------------------------
 -- Orthogonal matrices
 

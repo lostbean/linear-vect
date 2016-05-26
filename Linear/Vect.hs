@@ -6,6 +6,7 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE IncoherentInstances #-}
 
 module Linear.Vect
   ( Vec2(..), Vec3(..), Vec4(..)
@@ -28,6 +29,7 @@ module Linear.Vect
 
 import Control.DeepSeq
 import Data.Bits
+import Data.Foldable
 import Data.Vector.Unboxed (Unbox)
 import Data.Vector.Unboxed.Deriving
 import Foreign.Storable
@@ -111,6 +113,34 @@ instance HasOne Normal3 where
 
 instance HasOne Normal4 where
   _1 (Normal4 (Vec4 x _ _ _)) = x
+
+instance Show a => PrettyShow (Vec2 a) where
+  showPretty = wrapBars . unwords . map show . toList
+instance Show a => PrettyShow (Vec3 a) where
+  showPretty = wrapBars . unwords . map show . toList
+instance Show a => PrettyShow (Vec4 a) where
+  showPretty = wrapBars . unwords . map show . toList
+
+instance PrettyShow Vec2D where
+  showPretty = wrapBars . unwords . map showPretty . toList
+instance PrettyShow Vec3D where
+  showPretty = wrapBars . unwords . map showPretty . toList
+instance PrettyShow Vec4D where
+  showPretty = wrapBars . unwords . map showPretty . toList
+
+instance Show a => PrettyShow (Normal2 a) where
+  showPretty = showPretty . unNormal2
+instance Show a => PrettyShow (Normal3 a) where
+  showPretty = showPretty . unNormal3
+instance Show a => PrettyShow (Normal4 a) where
+  showPretty = showPretty . unNormal4
+
+instance PrettyShow Normal2D where
+  showPretty = showPretty . unNormal2
+instance PrettyShow Normal3D where
+  showPretty = showPretty . unNormal3
+instance PrettyShow Normal4D where
+  showPretty = showPretty . unNormal4
 
 --------------------------------------------------------------------------------
 -- Unit vectors

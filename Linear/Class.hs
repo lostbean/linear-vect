@@ -19,8 +19,12 @@ module Linear.Class
   , HasThree (..)
   , HasFour  (..)
   , NearZero (..)
+  , PrettyShow (..)
+  , wrapBars
   )
 where
+
+import Text.Printf (printf)
 
 class AbelianGroup g where
   (&+) :: g -> g -> g
@@ -260,3 +264,14 @@ instance NearZero Int where
 
 instance NearZero Double where
   epsilon = 1e-12
+
+
+class PrettyShow v where
+  -- | Pretty print vectors and matrices.
+  showPretty :: v -> String
+
+instance PrettyShow Double where
+  showPretty = printf "%3.3e"
+
+wrapBars :: String -> String
+wrapBars x = "| " ++ x ++ " |"
