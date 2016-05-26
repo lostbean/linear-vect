@@ -1,12 +1,14 @@
-{-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TypeFamilies #-}
-
+{-# LANGUAGE
+    FlexibleContexts
+  , FlexibleInstances
+  , GeneralizedNewtypeDeriving
+  , MultiParamTypeClasses
+  , ScopedTypeVariables
+  , StandaloneDeriving
+  , TemplateHaskell
+  , TypeFamilies
+  #-}
+{-# OPTIONS_GHC -fno-warn-orphans #-}
 module Linear.Mat
   ( Mat2(..) , Mat3(..) , Mat4(..)
   , Mat2x3(..) , Mat2x4(..) , Mat3x2(..)
