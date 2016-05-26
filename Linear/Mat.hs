@@ -19,6 +19,7 @@ module Linear.Mat
   , Mat2D
   , Mat3D
   , Mat4D
+  , module Linear.Class
   ) where
 
 import Control.DeepSeq

@@ -12,6 +12,8 @@ module Linear.Decomp
   , qrHouse
   , Hessenberg (..)
   , OrthoMatrix (..)
+
+  , module Linear.Class
   ) where
 
 import Data.List (foldl')

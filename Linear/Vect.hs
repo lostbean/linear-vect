@@ -25,6 +25,8 @@ module Linear.Vect
   , Normal2D
   , Normal3D
   , Normal4D
+
+  , module Linear.Class
   ) where
 
 import Control.DeepSeq
