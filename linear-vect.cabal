@@ -20,9 +20,10 @@ source-repository head
   location:          https://github.com/capsjac/linear-vect
 
 library
-  exposed-modules:     Linear.Vect
-                     , Linear.Class
+  exposed-modules:     Linear.Class
+                     , Linear.Decomp
                      , Linear.Mat
+                     , Linear.Vect
 
   build-depends:       base            >= 4.7 && < 4.9
                      , random          >= 1.0 && < 1.2
