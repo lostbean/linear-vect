@@ -587,7 +587,7 @@ instance Num a => Extend a Mat3 Mat4 where
 
 instance Transpose (Mat2x3 a) (Mat3x2 a) where
   transpose (Mat2x3 a b c  d e f) =
-    Mat3x2 a d b e c f
+    Mat3x2 a d  b e  c f
 
 instance Transpose (Mat2x4 a) (Mat4x2 a) where
   transpose (Mat2x4 a b c d  e f g h) =
