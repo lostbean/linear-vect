@@ -322,6 +322,11 @@ instance Foldable Mat2 where
     sum     (Mat2 a b) = sum     a * sum     b
     product (Mat2 a b) = product a * product b
 
+instance HasRowOne   (Mat2 a) (Vec2 a) where
+  _R1 (Mat2 x _) = x
+instance HasRowTwo   (Mat2 a) (Vec2 a) where
+  _R2 (Mat2 _ y) = y
+
 --------------------------------------------------------------------------------
 -- Mat3 instances
 
@@ -451,6 +456,13 @@ instance Foldable Mat3 where
     sum     (Mat3 a b c) = sum     a * sum     b * sum     c
     product (Mat3 a b c) = product a * product b * product c
 
+instance HasRowOne   (Mat3 a) (Vec3 a) where
+  _R1 (Mat3 x _ _) = x
+instance HasRowTwo   (Mat3 a) (Vec3 a) where
+  _R2 (Mat3 _ y _) = y
+instance HasRowThree (Mat3 a) (Vec3 a) where
+  _R3 (Mat3 _ _ z) = z
+
 --------------------------------------------------------------------------------
 -- Mat4 instances
 
@@ -571,6 +583,15 @@ instance Foldable Mat4 where
     maximum = foldl1 max
     sum     (Mat4 a b c d) = sum     a * sum     b * sum     c * sum     d
     product (Mat4 a b c d) = product a * product b * product c * product d
+
+instance HasRowOne   (Mat4 a) (Vec4 a) where
+  _R1 (Mat4 x _ _ _) = x
+instance HasRowTwo   (Mat4 a) (Vec4 a) where
+  _R2 (Mat4 _ y _ _) = y
+instance HasRowThree (Mat4 a) (Vec4 a) where
+  _R3 (Mat4 _ _ z _) = z
+instance HasRowFour  (Mat4 a) (Vec4 a) where
+  _R4 (Mat4 _ _ _ w) = w
 
 --------------------------------------------------------------------------------
 -- Extend instances

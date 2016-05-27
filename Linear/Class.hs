@@ -18,6 +18,10 @@ module Linear.Class
   , HasTwo   (..)
   , HasThree (..)
   , HasFour  (..)
+  , HasRowOne   (..)
+  , HasRowTwo   (..)
+  , HasRowThree (..)
+  , HasRowFour  (..)
   , NearZero (..)
   , PrettyShow (..)
   , wrapBars
@@ -252,6 +256,15 @@ class HasThree v where
   _3 :: v a -> a
 class HasFour v where
   _4 :: v a -> a
+
+class HasRowOne   v e | e -> v where
+  _R1 :: v -> e
+class HasRowTwo   v e | e -> v where
+  _R2 :: v -> e
+class HasRowThree v e | e -> v where
+  _R3 :: v -> e
+class HasRowFour  v e | e -> v where
+  _R4 :: v -> e
 
 class Num a => NearZero a where
   epsilon      :: a
