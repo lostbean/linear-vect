@@ -1,1 +1,6 @@
-dist/
+/cabal.sandbox.config
+/.cabal-sandbox/
+/.output/
+/.docker_images/
+.DS_Store*
+.stack-work/
