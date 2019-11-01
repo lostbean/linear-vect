@@ -25,7 +25,7 @@ library
                      , Linear.Mat
                      , Linear.Vect
 
-  build-depends:       base            >= 4.7 && < 4.9
+  build-depends:       base            >= 4.7 && < 5
                      , random          >= 1.0 && < 1.2
                      , deepseq         >= 1.2
                      , vector          >= 0.10

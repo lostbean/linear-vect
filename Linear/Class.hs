@@ -85,8 +85,8 @@ infixr 7 *&
 infixl 7 &*
 
 {-# RULES
-"scalar multiplication left"   forall (s :: Num s => s) (t :: Num t => t) x. t *& (s *& x) = (t*s) *& x
-"scalar multiplication right"  forall (s :: Num s => s) (t :: Num t => t) x.  (x &* s) &* t = x &* (s*t)
+"scalar multiplication left"   forall (s :: Num a => a) (t :: Num a => a) x. t *& (s *& x) = (t * s) *& x
+"scalar multiplication right"  forall (s :: Num a => a) (t :: Num a => a) x.  (x &* s) &* t = x &* (s * t)
   #-}
 
 class Num a => DotProd a v where

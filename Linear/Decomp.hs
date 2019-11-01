@@ -285,8 +285,8 @@ testQR :: (Transpose g g, MultSemiGroup g, AbelianGroup g, OrthoMatrix g, Square
 testQR m = m &- (q .*. r)
   where (q, r) = qrHouse m
 
-testEigen m = map (normsqr . foo) $ take n [(_1, _1), (_2, _2), (_3, _3), (_4, _4)]
-  where
-    n = dim m
-    foo (f1, f2) = (m &- (f1 value) *& idmtx) *. (f2 $ transpose vec)
-    (vec, value) = symmEigen m
+-- testEigen m = map (normsqr . foo) $ take n [(_1, _1), (_2, _2), (_3, _3), (_4, _4)]
+--   where
+--     n = dim m
+--     foo (f1, f2) = (m &- (f1 value) *& idmtx) *. (f2 $ transpose vec)
+--     (vec, value) = symmEigen m
