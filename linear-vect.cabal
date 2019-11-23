@@ -30,6 +30,7 @@ library
                      , deepseq         >= 1.2
                      , vector          >= 0.10
                      , vector-th-unbox >= 0.2.1
+                     , serialise       >= 0.2
 
   default-language:    Haskell2010
 

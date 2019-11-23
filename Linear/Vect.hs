@@ -1,12 +1,15 @@
 {-# LANGUAGE FlexibleContexts #-}
-{-# LANGUAGE FlexibleInstances #-}
-{-# LANGUAGE GeneralizedNewtypeDeriving #-}
-{-# LANGUAGE MultiParamTypeClasses #-}
-{-# LANGUAGE ScopedTypeVariables #-}
-{-# LANGUAGE StandaloneDeriving #-}
-{-# LANGUAGE TemplateHaskell #-}
-{-# LANGUAGE TypeFamilies #-}
-{-# LANGUAGE IncoherentInstances #-}
+{-# LANGUAGE
+    DeriveGeneric
+  , FlexibleInstances
+  , GeneralizedNewtypeDeriving
+  , IncoherentInstances
+  , MultiParamTypeClasses
+  , ScopedTypeVariables
+  , StandaloneDeriving
+  , TemplateHaskell
+  , TypeFamilies
+#-}
 
 module Linear.Vect
   ( Vec2(..), Vec3(..), Vec4(..)
@@ -29,6 +32,7 @@ module Linear.Vect
   , module Linear.Class
   ) where
 
+import Codec.Serialise (Serialise)
 import Control.DeepSeq
 import Data.Bits
 import Data.Foldable
@@ -36,6 +40,7 @@ import Data.Vector.Unboxed (Unbox)
 import Data.Vector.Unboxed.Deriving
 import Foreign.Storable
 import Foreign.Ptr
+import GHC.Generics
 import System.Random
 
 import Linear.Class
@@ -44,17 +49,24 @@ import Linear.Class
 -- Vec datatypes
 
 data Vec2 a = Vec2 !a !a
-  deriving (Read, Show, Eq)
+  deriving (Read, Show, Eq, Generic)
 data Vec3 a = Vec3 !a !a !a
-  deriving (Read, Show, Eq)
+  deriving (Read, Show, Eq, Generic)
 data Vec4 a = Vec4 !a !a !a !a
-  deriving (Read, Show, Eq)
+  deriving (Read, Show, Eq, Generic)
 
 -- | The assumption when dealing with these is always that they are of unit length.
 -- Also, interpolation works differently.
-newtype Normal2 a = Normal2 {unNormal2 :: Vec2 a} deriving (Read, Eq, Show, Storable, Dimension)
-newtype Normal3 a = Normal3 {unNormal3 :: Vec3 a} deriving (Read, Eq, Show, Storable, Dimension)
-newtype Normal4 a = Normal4 {unNormal4 :: Vec4 a} deriving (Read, Eq, Show, Storable, Dimension)
+newtype Normal2 a = Normal2 {unNormal2 :: Vec2 a} deriving (Read, Eq, Show, Generic, Storable, Dimension)
+newtype Normal3 a = Normal3 {unNormal3 :: Vec3 a} deriving (Read, Eq, Show, Generic, Storable, Dimension)
+newtype Normal4 a = Normal4 {unNormal4 :: Vec4 a} deriving (Read, Eq, Show, Generic, Storable, Dimension)
+
+instance (Serialise a)=> Serialise (Vec2 a)
+instance (Serialise a)=> Serialise (Vec3 a)
+instance (Serialise a)=> Serialise (Vec4 a)
+instance (Serialise a)=> Serialise (Normal2 a)
+instance (Serialise a)=> Serialise (Normal3 a)
+instance (Serialise a)=> Serialise (Normal4 a)
 
 deriving instance Floating a => DotProd a Normal2
 deriving instance Floating a => DotProd a Normal3

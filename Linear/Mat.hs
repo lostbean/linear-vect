@@ -1,5 +1,6 @@
 {-# LANGUAGE
-    FlexibleContexts
+    DeriveGeneric
+  , FlexibleContexts
   , FlexibleInstances
   , GeneralizedNewtypeDeriving
   , MultiParamTypeClasses
@@ -9,6 +10,7 @@
   , TypeFamilies
   #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
+
 module Linear.Mat
   ( Mat2(..) , Mat3(..) , Mat4(..)
   , Mat2x3(..) , Mat2x4(..) , Mat3x2(..)
@@ -22,11 +24,13 @@ module Linear.Mat
   , module Linear.Class
   ) where
 
+import Codec.Serialise (Serialise)
 import Control.DeepSeq
 import Data.Vector.Unboxed (Unbox)
 import Data.Vector.Unboxed.Deriving
 import Foreign.Storable
 import Foreign.Ptr
+import GHC.Generics
 import System.Random
 
 import Linear.Class
@@ -37,15 +41,25 @@ import Linear.Vect
 
 -- | The components are /row/ vectors
 
-data Mat2 a   = Mat2 !(Vec2 a) !(Vec2 a)                     deriving (Read, Eq, Show)
-data Mat3 a   = Mat3 !(Vec3 a) !(Vec3 a) !(Vec3 a)           deriving (Read, Eq, Show)
-data Mat4 a   = Mat4 !(Vec4 a) !(Vec4 a) !(Vec4 a) !(Vec4 a) deriving (Read, Eq, Show)
-data Mat2x3 a = Mat2x3 !a !a !a !a !a !a                     deriving (Read, Eq, Show)
-data Mat2x4 a = Mat2x4 !a !a !a !a !a !a !a !a               deriving (Read, Eq, Show)
-data Mat3x2 a = Mat3x2 !a !a !a !a !a !a                     deriving (Read, Eq, Show)
-data Mat3x4 a = Mat3x4 !a !a !a !a !a !a !a !a !a !a !a !a   deriving (Read, Eq, Show)
-data Mat4x2 a = Mat4x2 !a !a !a !a !a !a !a !a               deriving (Read, Eq, Show)
-data Mat4x3 a = Mat4x3 !a !a !a !a !a !a !a !a !a !a !a !a   deriving (Read, Eq, Show)
+data Mat2 a   = Mat2 !(Vec2 a) !(Vec2 a)                     deriving (Read, Eq, Show, Generic)
+data Mat3 a   = Mat3 !(Vec3 a) !(Vec3 a) !(Vec3 a)           deriving (Read, Eq, Show, Generic)
+data Mat4 a   = Mat4 !(Vec4 a) !(Vec4 a) !(Vec4 a) !(Vec4 a) deriving (Read, Eq, Show, Generic)
+data Mat2x3 a = Mat2x3 !a !a !a !a !a !a                     deriving (Read, Eq, Show, Generic)
+data Mat2x4 a = Mat2x4 !a !a !a !a !a !a !a !a               deriving (Read, Eq, Show, Generic)
+data Mat3x2 a = Mat3x2 !a !a !a !a !a !a                     deriving (Read, Eq, Show, Generic)
+data Mat3x4 a = Mat3x4 !a !a !a !a !a !a !a !a !a !a !a !a   deriving (Read, Eq, Show, Generic)
+data Mat4x2 a = Mat4x2 !a !a !a !a !a !a !a !a               deriving (Read, Eq, Show, Generic)
+data Mat4x3 a = Mat4x3 !a !a !a !a !a !a !a !a !a !a !a !a   deriving (Read, Eq, Show, Generic)
+
+instance (Serialise a)=> Serialise (Mat2 a)
+instance (Serialise a)=> Serialise (Mat3 a)
+instance (Serialise a)=> Serialise (Mat4 a)
+instance (Serialise a)=> Serialise (Mat2x3 a)
+instance (Serialise a)=> Serialise (Mat2x4 a)
+instance (Serialise a)=> Serialise (Mat3x2 a)
+instance (Serialise a)=> Serialise (Mat3x4 a)
+instance (Serialise a)=> Serialise (Mat4x2 a)
+instance (Serialise a)=> Serialise (Mat4x3 a)
 
 -- | Orthogonal matrices.
 --
