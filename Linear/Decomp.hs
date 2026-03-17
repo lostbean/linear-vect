@@ -14,8 +14,6 @@ module Linear.Decomp (
     module Linear.Class,
 ) where
 
-import Data.List (foldl')
-
 import Linear.Class
 import Linear.Mat
 import Linear.Vect
