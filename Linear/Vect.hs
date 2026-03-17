@@ -13,15 +13,15 @@ module Linear.Vect (
     Vec2 (..),
     Vec3 (..),
     Vec4 (..),
-    Normal2,
-    Normal3,
-    Normal4,
+    Normal2 (..),
+    Normal3 (..),
+    Normal4 (..),
     mkVec2,
     mkVec3,
     mkVec4,
-    HasV2,
-    HasV3,
-    HasV4,
+    HasV2 (..),
+    HasV3 (..),
+    HasV4 (..),
     _x,
     _y,
     _z,
@@ -118,6 +118,21 @@ class HasV4 v where
 _w :: Vec4 a -> a
 _w (Vec4 _ _ _ w) = w
 
+instance HasV2 Normal2 where
+    getV2 (Normal2 v) = v
+instance HasV2 Normal3 where
+    getV2 (Normal3 v) = getV2 v
+instance HasV2 Normal4 where
+    getV2 (Normal4 v) = getV2 v
+
+instance HasV3 Normal3 where
+    getV3 (Normal3 v) = v
+instance HasV3 Normal4 where
+    getV3 (Normal4 v) = getV3 v
+
+instance HasV4 Normal4 where
+    getV4 (Normal4 v) = v
+
 instance HasOne Normal2 where
     _1 (Normal2 (Vec2 x _)) = x
 
@@ -173,10 +188,10 @@ instance (Floating a) => UnitVector a Vec4 Normal4 where
     fromNormal (Normal4 v) = v
     toNormalUnsafe = Normal4
 
-_rndUnit :: (Fractional a, Ord a, RandomGen g, Random (v a), LinearMap a v, DotProd a v) => g -> (v a, g)
+_rndUnit :: (Floating a, Ord a, RandomGen g, Random (v a), LinearMap a v, DotProd a v, Norm a v) => g -> (v a, g)
 _rndUnit g =
     if d > 0.0001
-        then (v &* (1.0 / d), h)
+        then (v &* (1.0 / sqrt d), h)
         else _rndUnit h
   where
     (v, h) = random g
@@ -260,9 +275,9 @@ instance Functor Vec2 where
 
 instance Foldable Vec2 where
     foldr f acc (Vec2 a b) = f a (f b acc)
-    foldl f acc (Vec2 a b) = acc `f` b `f` a
+    foldl f acc (Vec2 a b) = (acc `f` a) `f` b
     foldr1 f (Vec2 a b) = a `f` b
-    foldl1 f (Vec2 a b) = b `f` a
+    foldl1 f (Vec2 a b) = a `f` b
     null = const False
     length = const 2
     maximum (Vec2 a b) = a `max` b
@@ -347,13 +362,13 @@ instance Functor Vec3 where
 
 instance Foldable Vec3 where
     foldr f acc (Vec3 a b c) = f a (f b (f c acc))
-    foldl f acc (Vec3 a b c) = acc `f` c `f` b `f` a
-    foldr1 f (Vec3 a b c) = a `f` b `f` c
-    foldl1 f (Vec3 a b c) = c `f` b `f` a
+    foldl f acc (Vec3 a b c) = ((acc `f` a) `f` b) `f` c
+    foldr1 f (Vec3 a b c) = a `f` (b `f` c)
+    foldl1 f (Vec3 a b c) = (a `f` b) `f` c
     null = const False
     length = const 3
-    maximum (Vec3 a b c) = a `max` b `max` c
-    minimum (Vec3 a b c) = a `min` b `min` c
+    maximum (Vec3 a b c) = a `max` (b `max` c)
+    minimum (Vec3 a b c) = a `min` (b `min` c)
     sum (Vec3 a b c) = a + b + c
     product (Vec3 a b c) = a * b * c
 
@@ -437,13 +452,13 @@ instance Functor Vec4 where
 
 instance Foldable Vec4 where
     foldr f acc (Vec4 a b c d) = f a (f b (f c (f d acc)))
-    foldl f acc (Vec4 a b c d) = acc `f` d `f` c `f` b `f` a
-    foldr1 f (Vec4 a b c d) = a `f` b `f` c `f` d
-    foldl1 f (Vec4 a b c d) = d `f` c `f` b `f` a
+    foldl f acc (Vec4 a b c d) = (((acc `f` a) `f` b) `f` c) `f` d
+    foldr1 f (Vec4 a b c d) = a `f` (b `f` (c `f` d))
+    foldl1 f (Vec4 a b c d) = ((a `f` b) `f` c) `f` d
     null = const False
     length = const 4
-    maximum (Vec4 a b c d) = a `max` b `max` c `max` d
-    minimum (Vec4 a b c d) = a `min` b `min` c `min` d
+    maximum (Vec4 a b c d) = a `max` (b `max` (c `max` d))
+    minimum (Vec4 a b c d) = a `min` (b `min` (c `min` d))
     sum (Vec4 a b c d) = a + b + c + d
     product (Vec4 a b c d) = a * b * c * d
 

@@ -11,6 +11,7 @@ module Linear.Decomp (
     qrHouse,
     Hessenberg (..),
     OrthoMatrix (..),
+    HasE1 (..),
     module Linear.Class,
 ) where
 
@@ -162,7 +163,7 @@ symmEigen ::
     , NearZero a
     ) =>
     m a -> (m a, v a)
-symmEigen m = eigen q0 (r0 .*. q0) (10 * dim m)
+symmEigen m = eigen q0 (r0 .*. q0) (100 * dim m)
   where
     (q0, r0) = qrHouse m
     eigen !u !a !count

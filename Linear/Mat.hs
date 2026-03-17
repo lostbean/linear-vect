@@ -6,6 +6,7 @@
 {-# LANGUAGE StandaloneDeriving #-}
 {-# LANGUAGE TemplateHaskell #-}
 {-# LANGUAGE TypeFamilies #-}
+{-# LANGUAGE UndecidableInstances #-}
 {-# OPTIONS_GHC -fno-warn-orphans #-}
 
 module Linear.Mat (
@@ -81,6 +82,18 @@ instance PrettyShow Mat3D where
     showPretty (Mat3 a b c) = unlines [showPretty a, showPretty b, showPretty c]
 instance PrettyShow Mat4D where
     showPretty (Mat4 a b c d) = unlines [showPretty a, showPretty b, showPretty c, showPretty d]
+
+instance (PrettyShow (Mat2 a)) => PrettyShow (Ortho2 a) where
+    showPretty (Ortho2 m) = showPretty m
+instance (PrettyShow (Mat3 a)) => PrettyShow (Ortho3 a) where
+    showPretty (Ortho3 m) = showPretty m
+instance (PrettyShow (Mat4 a)) => PrettyShow (Ortho4 a) where
+    showPretty (Ortho4 m) = showPretty m
+
+instance (PrettyShow (Mat3 a)) => PrettyShow (Proj3 a) where
+    showPretty (Proj3 m) = showPretty m
+instance (PrettyShow (Mat4 a)) => PrettyShow (Proj4 a) where
+    showPretty (Proj4 m) = showPretty m
 
 --------------------------------------------------------------------------------
 -- Orthogonal matrices
@@ -330,16 +343,9 @@ instance Functor Mat2 where
     fmap f (Mat2 a b) = Mat2 (fmap f a) (fmap f b)
 
 instance Foldable Mat2 where
-    foldr f acc (Mat2 a b) = foldr f (foldr f acc b) a
-    foldl f acc (Mat2 a b) = foldl f (foldl f acc a) b
-    foldr1 f (Mat2 a b) = foldr1 f a `f` foldr1 f b
-    foldl1 f (Mat2 a b) = foldl1 f b `f` foldl1 f a
+    foldMap f (Mat2 a b) = foldMap f a `mappend` foldMap f b
     null = const False
-    length = const 2
-    minimum = foldl1 min
-    maximum = foldl1 max
-    sum (Mat2 a b) = sum a * sum b
-    product (Mat2 a b) = product a * product b
+    length = const 4
 
 instance HasRowOne (Mat2 a) (Vec2 a) where
     _R1 (Mat2 x _) = x
@@ -468,16 +474,9 @@ instance Functor Mat3 where
     fmap f (Mat3 a b c) = Mat3 (fmap f a) (fmap f b) (fmap f c)
 
 instance Foldable Mat3 where
-    foldr f acc (Mat3 a b c) = foldr f (foldr f (foldr f acc c) b) a
-    foldl f acc (Mat3 a b c) = foldl f (foldl f (foldl f acc a) b) c
-    foldr1 f (Mat3 a b c) = foldr1 f a `f` foldr1 f b `f` foldr1 f c
-    foldl1 f (Mat3 a b c) = foldl1 f c `f` foldl1 f b `f` foldl1 f a
+    foldMap f (Mat3 a b c) = foldMap f a `mappend` foldMap f b `mappend` foldMap f c
     null = const False
-    length = const 3
-    minimum = foldl1 min
-    maximum = foldl1 max
-    sum (Mat3 a b c) = sum a * sum b * sum c
-    product (Mat3 a b c) = product a * product b * product c
+    length = const 9
 
 instance HasRowOne (Mat3 a) (Vec3 a) where
     _R1 (Mat3 x _ _) = x
@@ -497,9 +496,36 @@ instance Transpose (Mat4 a) (Mat4 a) where
             (Vec4 z1 z2 z3 z4)
             (Vec4 w1 w2 w3 w4)
 
-instance (Num a) => SquareMatrix (Mat4 a) where
+instance (Fractional a) => SquareMatrix (Mat4 a) where
     idmtx = Mat4 (Vec4 1 0 0 0) (Vec4 0 1 0 0) (Vec4 0 0 1 0) (Vec4 0 0 0 1)
-    inverse = error "inverse/Mat4: not implemented yet"
+    inverse m@(Mat4 (Vec4 a11 a12 a13 a14) (Vec4 a21 a22 a23 a24) (Vec4 a31 a32 a33 a34) (Vec4 a41 a42 a43 a44)) =
+        scalarMul (1 / det m) $
+            transpose $
+                Mat4
+                    (Vec4 c11 c12 c13 c14)
+                    (Vec4 c21 c22 c23 c24)
+                    (Vec4 c31 c32 c33 c34)
+                    (Vec4 c41 c42 c43 c44)
+      where
+        c11 = det (Mat3 (Vec3 a22 a23 a24) (Vec3 a32 a33 a34) (Vec3 a42 a43 a44))
+        c12 = -det (Mat3 (Vec3 a21 a23 a24) (Vec3 a31 a33 a34) (Vec3 a41 a43 a44))
+        c13 = det (Mat3 (Vec3 a21 a22 a24) (Vec3 a31 a32 a34) (Vec3 a41 a42 a44))
+        c14 = -det (Mat3 (Vec3 a21 a22 a23) (Vec3 a31 a32 a33) (Vec3 a41 a42 a43))
+
+        c21 = -det (Mat3 (Vec3 a12 a13 a14) (Vec3 a32 a33 a34) (Vec3 a42 a43 a44))
+        c22 = det (Mat3 (Vec3 a11 a13 a14) (Vec3 a31 a33 a34) (Vec3 a41 a43 a44))
+        c23 = -det (Mat3 (Vec3 a11 a12 a14) (Vec3 a31 a32 a34) (Vec3 a41 a42 a44))
+        c24 = det (Mat3 (Vec3 a11 a12 a13) (Vec3 a31 a32 a33) (Vec3 a41 a42 a43))
+
+        c31 = det (Mat3 (Vec3 a12 a13 a14) (Vec3 a22 a23 a24) (Vec3 a42 a43 a44))
+        c32 = -det (Mat3 (Vec3 a11 a13 a14) (Vec3 a21 a23 a24) (Vec3 a41 a43 a44))
+        c33 = det (Mat3 (Vec3 a11 a12 a14) (Vec3 a21 a22 a24) (Vec3 a41 a42 a44))
+        c34 = -det (Mat3 (Vec3 a11 a12 a13) (Vec3 a21 a22 a23) (Vec3 a41 a42 a43))
+
+        c41 = -det (Mat3 (Vec3 a12 a13 a14) (Vec3 a22 a23 a24) (Vec3 a32 a33 a34))
+        c42 = det (Mat3 (Vec3 a11 a13 a14) (Vec3 a21 a23 a24) (Vec3 a31 a33 a34))
+        c43 = -det (Mat3 (Vec3 a11 a12 a14) (Vec3 a21 a22 a24) (Vec3 a31 a32 a34))
+        c44 = det (Mat3 (Vec3 a11 a12 a13) (Vec3 a21 a22 a23) (Vec3 a31 a32 a33))
 
 instance (Num a) => AbelianGroup (Mat4 a) where
     (&+) (Mat4 r1 r2 r3 r4) (Mat4 s1 s2 s3 s4) = Mat4 (r1 &+ s1) (r2 &+ s2) (r3 &+ s3) (r4 &+ s4)
@@ -511,7 +537,7 @@ instance (Num a) => LinearMap a Mat4 where
     scalarMul s (Mat4 r1 r2 r3 r4) = Mat4 (g r1) (g r2) (g r3) (g r4) where g = scalarMul s
     mapVec f (Mat4 r1 r2 r3 r4) = Mat4 (g r1) (g r2) (g r3) (g r4) where g = mapVec f
 
-instance (Num a) => MultSemiGroup (Mat4 a) where
+instance (Fractional a) => MultSemiGroup (Mat4 a) where
     (.*.) (Mat4 r1 r2 r3 r4) n =
         let (Mat4 c1 c2 c3 c4) = transpose n
          in Mat4
@@ -521,7 +547,7 @@ instance (Num a) => MultSemiGroup (Mat4 a) where
                 (Vec4 (r4 &. c1) (r4 &. c2) (r4 &. c3) (r4 &. c4))
     one = idmtx
 
-instance (Num a) => Ring (Mat4 a)
+instance (Fractional a) => Ring (Mat4 a)
 
 instance (Num a) => LeftModule (Mat4 a) (Vec4 a) where
     lmul (Mat4 row1 row2 row3 row4) v = Vec4 (row1 &. v) (row2 &. v) (row3 &. v) (row4 &. v)
@@ -540,11 +566,6 @@ instance (Num a) => Tensor (Mat4 a) (Vec4 a) where
             (Vec4 (b * x) (b * y) (b * z) (b * w))
             (Vec4 (c * x) (c * y) (c * z) (c * w))
             (Vec4 (d * x) (d * y) (d * z) (d * w))
-
-instance (Num a) => Determinant a (Mat4 a) where
-    det = error "det/Mat4: not implemented yet"
-
--- det (Mat4 r1 r2 r3 r4) =
 
 {-
 instance Show Mat4 where
@@ -601,16 +622,9 @@ instance Functor Mat4 where
     fmap f (Mat4 a b c d) = Mat4 (fmap f a) (fmap f b) (fmap f c) (fmap f d)
 
 instance Foldable Mat4 where
-    foldr f acc (Mat4 a b c d) = foldr f (foldr f (foldr f (foldr f acc d) c) b) a
-    foldl f acc (Mat4 a b c d) = foldl f (foldl f (foldl f (foldl f acc a) b) c) d
-    foldr1 f (Mat4 a b c d) = foldr1 f a `f` foldr1 f b `f` foldr1 f c `f` foldr1 f d
-    foldl1 f (Mat4 a b c d) = foldl1 f d `f` foldl1 f c `f` foldl1 f b `f` foldl1 f a
+    foldMap f (Mat4 a b c d) = foldMap f a `mappend` foldMap f b `mappend` foldMap f c `mappend` foldMap f d
     null = const False
-    length = const 4
-    minimum = foldl1 min
-    maximum = foldl1 max
-    sum (Mat4 a b c d) = sum a * sum b * sum c * sum d
-    product (Mat4 a b c d) = product a * product b * product c * product d
+    length = const 16
 
 instance HasRowOne (Mat4 a) (Vec4 a) where
     _R1 (Mat4 x _ _ _) = x
@@ -620,6 +634,13 @@ instance HasRowThree (Mat4 a) (Vec4 a) where
     _R3 (Mat4 _ _ z _) = z
 instance HasRowFour (Mat4 a) (Vec4 a) where
     _R4 (Mat4 _ _ _ w) = w
+
+instance (Num a) => Determinant a (Mat4 a) where
+    det (Mat4 (Vec4 a b c d) (Vec4 e f g h) (Vec4 i j k l) (Vec4 m n o p)) =
+        a * det (Mat3 (Vec3 f g h) (Vec3 j k l) (Vec3 n o p))
+            - b * det (Mat3 (Vec3 e g h) (Vec3 i k l) (Vec3 m o p))
+            + c * det (Mat3 (Vec3 e f h) (Vec3 i j l) (Vec3 m n p))
+            - d * det (Mat3 (Vec3 e f g) (Vec3 i j k) (Vec3 m n o))
 
 --------------------------------------------------------------------------------
 -- Extend instances
