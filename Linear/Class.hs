@@ -1,4 +1,5 @@
 {-# LANGUAGE FunctionalDependencies #-}
+{-# OPTIONS_GHC -Wno-inline-rule-shadowing #-}
 
 -- | class declarations
 module Linear.Class (
@@ -123,6 +124,7 @@ class (Floating a, DotProd a v) => Norm a v where
 
 infix 7 &.
 
+{-# NOINLINE [1] normalize #-}
 normalize :: (LinearMap a v, Norm a v) => v a -> v a
 normalize v = scalarMul (recip (vlen v)) v
 
@@ -238,8 +240,8 @@ class SquareMatrix m where
     idmtx :: m
 
 {-# RULES
-"transpose is an involution" forall m. transpose (transpose m) = m
-"inverse is an involution" forall m. inverse (inverse m) = m
+"transpose is an involution" [1] forall m. transpose (transpose m) = m
+"inverse is an involution" [1] forall m. inverse (inverse m) = m
     #-}
 
 class (SquareMatrix (m a)) => Orthogonal a m o | m -> o, o -> m where
