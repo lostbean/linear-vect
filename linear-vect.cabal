@@ -49,10 +49,6 @@ library
     ScopedTypeVariables
     StandaloneDeriving
 
-flag test
-  description: Build the test suite
-  default:     False
-
 test-suite decomp-test
   type:               exitcode-stdio-1.0
   main-is:            Spec.hs
@@ -69,17 +65,11 @@ test-suite decomp-test
   default-language:   Haskell2010
   ghc-options:        -Wall
   build-tool-depends: hspec-discover:hspec-discover >=2.0
-
-  if flag(test)
-    buildable:     True
-    build-depends:
-        base         >=4.7 && <5
-      , deepseq
-      , hspec        >=2.0
-      , linear-vect
-      , QuickCheck   >=2.7
-      , random
-      , vector
-
-  else
-    buildable: False
+  build-depends:
+      base         >=4.7 && <5
+    , deepseq
+    , hspec        >=2.0
+    , linear-vect
+    , QuickCheck   >=2.7
+    , random
+    , vector
