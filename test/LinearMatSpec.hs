@@ -2,27 +2,10 @@
 
 module LinearMatSpec (spec) where
 
-import Linear.Class
+import Linear.Arbitrary ()
 import Linear.Mat
-import Linear.Vect
 import Test.Hspec
 import Test.QuickCheck
-
-instance (Arbitrary a) => Arbitrary (Vec2 a) where
-    arbitrary = Vec2 <$> arbitrary <*> arbitrary
-instance (Arbitrary a) => Arbitrary (Vec3 a) where
-    arbitrary = Vec3 <$> arbitrary <*> arbitrary <*> arbitrary
-instance (Arbitrary a) => Arbitrary (Vec4 a) where
-    arbitrary = Vec4 <$> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary
-
-instance (Arbitrary a) => Arbitrary (Mat2 a) where
-    arbitrary = Mat2 <$> arbitrary <*> arbitrary
-
-instance (Arbitrary a) => Arbitrary (Mat3 a) where
-    arbitrary = Mat3 <$> arbitrary <*> arbitrary <*> arbitrary
-
-instance (Arbitrary a) => Arbitrary (Mat4 a) where
-    arbitrary = Mat4 <$> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary
 
 spec :: Spec
 spec = do

@@ -2,7 +2,7 @@
 
 module LinearClassSpec (spec) where
 
-import Linear.Class
+import Linear.Arbitrary ()
 import Linear.Mat
 import Linear.Vect
 import Test.Hspec
@@ -34,11 +34,3 @@ spec = do
     infix 4 =~
     (=~) :: Double -> Double -> Bool
     a =~ b = abs (a - b) < 1e-10
-
-instance (Arbitrary a) => Arbitrary (Vec3 a) where
-    arbitrary = Vec3 <$> arbitrary <*> arbitrary <*> arbitrary
-
-instance (Arbitrary a, Floating a, Ord a) => Arbitrary (Normal3 a) where
-    arbitrary = do
-        v <- arbitrary `suchThat` (\v -> norm v > 1e-10)
-        return (toNormalUnsafe (normalize v))

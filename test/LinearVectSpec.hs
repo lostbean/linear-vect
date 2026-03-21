@@ -3,20 +3,12 @@
 module LinearVectSpec (spec) where
 
 import Data.Foldable (all)
+import Linear.Arbitrary ()
 import Linear.Class
 import Linear.Vect
 import Test.Hspec
 import Test.QuickCheck
 import Prelude hiding (all)
-
-instance (Arbitrary a) => Arbitrary (Vec2 a) where
-    arbitrary = Vec2 <$> arbitrary <*> arbitrary
-
-instance (Arbitrary a) => Arbitrary (Vec3 a) where
-    arbitrary = Vec3 <$> arbitrary <*> arbitrary <*> arbitrary
-
-instance (Arbitrary a) => Arbitrary (Vec4 a) where
-    arbitrary = Vec4 <$> arbitrary <*> arbitrary <*> arbitrary <*> arbitrary
 
 -- Helper for near zero vectors
 isNearZero :: (Foldable v, NearZero a, Ord a) => v a -> Bool
